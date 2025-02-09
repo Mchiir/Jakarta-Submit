@@ -37,6 +37,26 @@ public class Task {
         this.deadline = deadline;
     }
 
+    public boolean isValid() {
+        if (instructor == null || !instructor.isValid()) {
+            return false;
+        }
+        if (courseName == null || courseName.isEmpty() || courseName.length() > 100) {
+            return false;
+        }
+
+        if (description == null || description.isEmpty() || description.length() > 100) {
+            return false;
+        }
+
+        // Validate the deadline (it should be a future date)
+        if (deadline == null || deadline.isBefore(LocalDateTime.now())) {
+            return false;
+        }
+
+        return true;  // All fields are valid
+    }
+
     @Override
     public String toString() {
         return String.format("Task{id=%s, instructorId=%s, course=%s, deadline=%s}",

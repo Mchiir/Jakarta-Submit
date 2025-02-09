@@ -38,6 +38,25 @@ public class Submission {
         this.submittedAt = LocalDateTime.now();
     }
 
+    public boolean isValid() {
+        // Validate the student field
+        if (student == null || !student.isValid()) {
+            return false;
+        }
+
+        // Validate the task field
+        if (task == null || !task.isValid()) {
+            return false;
+        }
+
+        // Validate the file path field
+        if (filePath == null || filePath.isEmpty() || !FileTypes.isValidFileType(filePath)) {
+            return false;
+        }
+
+        return true;  // All fields are valid
+    }
+
     @Override
     public String toString() {
         return String.format("Submission{id=%s, studentId=%s, taskId=%s, filePath=%s, submittedAt=%s}",

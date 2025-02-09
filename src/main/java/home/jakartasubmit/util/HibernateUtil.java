@@ -20,15 +20,16 @@ public class HibernateUtil {
             Properties settings = new Properties();
             //POSTGRESQL
 
-            //settings.put(Environment.DRIVER, "org.postgresql.Driver");
-            settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
+//            settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
+            settings.put(Environment.DRIVER, "org.postgresql.Driver");
             //Postgresql
 //            settings.put(Environment.URL, "jdbc:mysql://localhost:3306/mymis_db");
             settings.put(Environment.URL, "jdbc:postgresql://localhost:5432/jakarta_submission_db");
             settings.put(Environment.USER, "postgres");
-            settings.put(Environment.PASS, System.getenv("DB_PASSWORD"));
+            settings.put(Environment.PASS, "ATQXNgAme9XIqmyv");
+
             //PostgreSQL
-            //settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
+            settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
             settings.put(Environment.SHOW_SQL, true);
             settings.put(Environment.HBM2DDL_AUTO, "update");
             configuration.setProperties(settings);

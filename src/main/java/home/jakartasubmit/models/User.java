@@ -2,6 +2,7 @@ package home.jakartasubmit.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -36,6 +37,30 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
+    }
+
+    @PrePersist
+    public void hashPassword() {
+        if (password != null && !password.isEmpty()) {
+            int workFactor = Integer.parseInt("10");
+            this.password = BCrypt.hashpw(password, BCrypt.gensalt(workFactor));
+        }
+    }
+
+    public boolean isValid() {
+        if (fullName == null || fullName.isEmpty() || fullName.length() > 100) {
+            return false;
+        }
+        if (email == null || email.isEmpty() || email.length() > 100) {
+            return false;
+        }
+        if (password == null || password.isEmpty() || password.length() > 100) {
+            return false;
+        }
+        if (role == null) {
+            return false;
+        }
+        return true;  // All fields are valid
     }
 
     @Override

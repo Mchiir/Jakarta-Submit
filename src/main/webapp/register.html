@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body class="d-flex justify-content-center align-items-center"
+      style="height: 100vh; background-color: #f4f4f9;">
+
+<!-- Container for Centered Content -->
+<div class="container bg-white p-4 rounded shadow" style="width: 30%; padding-top: 20px; padding-bottom: 20px;">
+    <p class="text-center mb-4" style="font-size: 2rem; font-weight: bold;">Online Submission System</p>
+
+    <!-- Form -->
+    <form action="/Jakarta-Submit-1.0-SNAPSHOT/user" method="POST"> <!-- Adjust the action URL to match your servlet's URL pattern -->
+        <input type="hidden" name="action" value="register"> <!-- Action is 'register' -->
+
+        <!-- Full Name -->
+        <div class="mb-3">
+            <label for="fullName" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="fullName" name="fullName" required>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+
+        <!-- Role -->
+        <div class="mb-3">
+            <label for="role" class="form-label">Role</label>
+            <select class="form-select" id="role" name="role" required>
+                <option value="STUDENT">Student</option>
+                <option value="INSTRUCTOR">Instructor</option>
+                <option value="ADMIN">Admin</option>
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+    </form>
+</div>
+
+</body>
+
+</html>
