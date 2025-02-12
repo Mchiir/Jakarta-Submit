@@ -39,4 +39,3 @@ build/
 
 .env
 bootstrap
-HibernateUtil.java
