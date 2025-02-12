@@ -14,8 +14,8 @@
 
     <!-- Display Message -->
     <c:if test="${not empty message}">
-        <div class="alert alert-${messageType == 'success' ? 'success' : 'danger'}">
-                ${message}
+        <div class="alert alert-success}">
+                Registration successfull
         </div>
     </c:if>
 

@@ -17,6 +17,11 @@ public class UserService {
             System.out.println("User is not valid.");
             return false;
         }
+
+        if(getUserByEmail(user.getEmail()) != null) {
+            System.out.println("User Email already in use.");
+            return false;
+        }
         
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -86,6 +91,15 @@ public class UserService {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<User> query = session.createQuery("FROM User WHERE email = :email", User.class);
             query.setParameter("email", email);
+            return query.uniqueResult();
+        }
+    }
+
+    public User getUserByEmailAndId(String email, UUID id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<User> query = session.createQuery("FROM User WHERE email = :email and id = :id", User.class);
+            query.setParameter("email", email);
+            query.setParameter("id", id);
             return query.uniqueResult();
         }
     }

@@ -1,5 +1,6 @@
 package home.jakartasubmit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import home.jakartasubmit.models.User;
 import home.jakartasubmit.services.UserService;
 import jakarta.servlet.RequestDispatcher;
@@ -9,6 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 //@WebServlet(name = "UserServlet", value = "/user-servlet")
@@ -86,13 +90,63 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UUID userId = UUID.fromString(request.getParameter("id"));
-        User user = userService.getUserById(userId);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
-        if (user != null) {
-            response.getWriter().write("User: " + user.getFullName());
-        } else {
-            response.getWriter().write("User not found.");
+        String email = request.getParameter("email");
+        String id = request.getParameter("id");
+
+        PrintWriter out = response.getWriter();
+        Map<String, Object> responseJson = new HashMap<>();
+
+        try {
+            // Case 1: Check by email if email is provided
+            if (email != null && !email.isEmpty() && id == null) {
+                User userByEmail = userService.getUserByEmail(email);
+                if (userByEmail != null) {
+                    responseJson.put("exists", true);
+                    responseJson.put("user", userByEmail);
+                } else {
+                    responseJson.put("exists", false);
+                }
+            }
+            // Case 2: Check by id if id is provided
+            else if (id != null && !id.isEmpty() && email == null) {
+                UUID userId = UUID.fromString(id);
+                User userById = userService.getUserById(userId);
+                if (userById != null) {
+                    responseJson.put("exists", true);
+                    responseJson.put("user", userById);
+                } else {
+                    responseJson.put("exists", false);
+                }
+            }
+            // Case 3: Check by both email and id if both are provided
+            else if (email != null && !email.isEmpty() && id != null && !id.isEmpty()) {
+                UUID userId = UUID.fromString(id);
+                User userByEmailAndId = userService.getUserByEmailAndId(email, userId);
+                if (userByEmailAndId != null) {
+                    responseJson.put("exists", true);
+                    responseJson.put("user", userByEmailAndId);
+                } else {
+                    responseJson.put("exists", false);
+                }
+            } else {
+                responseJson.put("exists", false);
+                responseJson.put("message", "Neither email nor id was provided.");
+            }
+
+            // Set the response status to 200 (OK) and return the response
+            response.setStatus(200);
+            out.write(new ObjectMapper().writeValueAsString(responseJson));
+            out.flush();
+
+        } catch (Exception e) {
+            // Handle exceptions
+            response.setStatus(500);
+            responseJson.put("error", "An error occurred while processing the request.");
+            out.write(new ObjectMapper().writeValueAsString(responseJson));
+            out.flush();
         }
     }
 
