@@ -1,30 +1,26 @@
 <%@ page import="home.jakartasubmit.models.User" %>
 <%
-    String userEmail = (String) session.getAttribute("userEmail");
-    Boolean isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
-    String userRole = (String) session.getAttribute("userRole");
-
 //    if (userEmail == null || isLoggedIn == null || userRole == null) {
 //        response.sendRedirect("login.jsp");
 //        return;
 //    }
 
     User loggedInUser = (User) request.getAttribute("loggedInUser");
+    String userRole = null;
+    Boolean isLoggedIn = false;
+    String userEmail = null;
 
-    if (loggedInUser == null) {
-        userEmail = "asdf@gmail.com";
-        isLoggedIn = true;
-        userRole = "STUDENT";
-    } else {
+    if (loggedInUser != null) {
         userEmail = loggedInUser.getEmail();
         isLoggedIn = true;
         userRole = loggedInUser.getRole().toString();
     }
-
-    session.setAttribute("userEmail", userEmail);
-    session.setAttribute("isLoggedIn", isLoggedIn);
-    session.setAttribute("userRole", userRole);
 %>
+<script>
+    sessionStorage.setItem("userRole", <%=userRole%>)
+    sessionStorage.setItem("userEmail", <%=userEmail%>)
+    sessionStorage.setItem("isLoggedIn", <%=isLoggedIn%>)
+</script>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>

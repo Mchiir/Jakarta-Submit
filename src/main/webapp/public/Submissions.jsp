@@ -67,7 +67,7 @@
         <td><a href="<%= submission.getFilePath() %>" target="_blank">View File</a></td>
         <td><%= submission.getSubmittedAt() %></td>
         <td>
-            <% if ("INSTRUCTOR".equals(userRole) || "ADMIN".equals(userRole)) { %>
+            <% if ("STUDENT".equals(userRole) || "ADMIN".equals(userRole)) { %>
             <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
                 <input type="hidden" name="action" value="edit">
                 <input type="hidden" name="submissionId" value="<%= submission.getSubmissionId() %>">
