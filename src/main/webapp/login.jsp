@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
@@ -32,6 +32,9 @@
 
         <div class="d-flex justify-content-center">
             <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+        <div class="d-flex justify-content-center">
+            <a href="register.jsp">Register</a>
         </div>
 
     </form>

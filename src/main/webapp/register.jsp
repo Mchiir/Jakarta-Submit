@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
@@ -14,8 +14,8 @@
 <div class="container bg-white p-4 rounded shadow" style="width: 30%; padding-top: 20px; padding-bottom: 20px;">
     <p class="text-center mb-4" style="font-size: 2rem; font-weight: bold;">Online Submission System</p>
 
-    <!-- Form  action="/Jakarta-Submit-1.0-SNAPSHOT/user" method="POST"-->
-    <form id="form"> <!-- Adjust the action URL to match your servlet's URL pattern -->
+    <!-- Form  -->
+    <form action="/Jakarta-Submit-1.0-SNAPSHOT/user" method="POST" id="form"> <!-- Adjust the action URL to match your servlet's URL pattern -->
         <input type="hidden" name="action" id="action" value="register"> <!-- Action is 'register' -->
 
         <!-- Full Name -->
@@ -49,12 +49,16 @@
         <div class="d-flex justify-content-center">
             <button type="submit" class="btn btn-primary">Register</button>
         </div>
+        <div class="d-flex justify-content-center">
+            <a href="login.jsp">Login</a>
+        </div>
 
         <p style="color: coral; font-size: 16px; text-align: center" id="error_space"></p> <!-- Error message space -->
     </form>
 </div>
 
 </body>
+<!--
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let form = document.getElementById("form");
@@ -70,7 +74,10 @@
                 try {
                     // Check if the email exists before submitting
                     let emailCheckResponse = await fetch(`/Jakarta-Submit-1.0-SNAPSHOT/user?email=${email}`);
-                    let emailExists = await emailCheckResponse.json(); // Assume server returns { exists: true/false }
+                    if (!emailCheckResponse.ok) {
+                        throw new Error("Email check failed");
+                    }
+                    let emailExists = await emailCheckResponse.json();
 
                     if (emailExists.exists) {
                         console.log("email check response:"+ emailCheckResponse)
@@ -87,8 +94,8 @@
                     });
 
                     // let result = await registerResponse.json();
-                    let result = registerResponse;
-                    console.log("Registered response:"+ result);
+                    let result = await registerResponse.json();
+                    console.log("Registered response:", result);
 
                     if (registerResponse.ok) {
                         window.location.href = "reg-welcome.jsp"; // Redirect to welcome page
@@ -103,5 +110,5 @@
                 }
             });
         });
-    </script>
+    </script> -->
 </html>

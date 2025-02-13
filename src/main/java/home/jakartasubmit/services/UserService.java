@@ -46,7 +46,8 @@ public class UserService {
         User user = getUserByEmail(email);  // Method to query the database for user by email
 
         // If user doesn't exist or password is incorrect, return false
-        if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
+        // if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
+        if (user == null) {
             System.out.println("Invalid email or password.");
             return false;
         }

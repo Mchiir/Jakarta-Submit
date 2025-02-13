@@ -14,14 +14,15 @@
 
     <!-- Display Message -->
     <c:if test="${not empty message}">
-        <div class="alert alert-success}">
-                Registration successfull
+        <div class="alert alert-${messageType == 'success' ? 'success' : 'danger'}">
+                ${message}
         </div>
     </c:if>
 
-    <!-- Link to Register Another Student -->
-    <div class="text-center mt-3">
-        <a href="register.html" class="btn btn-secondary">Register another user</a>
+    <!-- Conditional Button -->
+    <div class="d-flex justify-content-center gap-3">
+        <a href="register.jsp">Register</a>
+        <a href="login.jsp">Login</a>
     </div>
 </div>
 

@@ -11,7 +11,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Student Dashboard</title>
+    <title>ADMIN Dashboard</title>
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -74,12 +74,12 @@
     </style>
 </head>
 <body style="background-color: #f4f4f9;">
-<div class="header">Student</div>
+<div class="header">ADMIN</div>
 <div class="sidebar d-flex flex-column">
     <a href="#">Dashboard</a>
     <a href="./public/Tasks.jsp">Tasks</a>
     <a href="./public/Submissions.jsp">Submissions</a>
-    <a href="./public/Tasks.jsp">Profile</a>
+    <a href="./public/Profile.jsp">Profile</a>
 </div>
 <div class="container p-4 flex-grow-1 content">
 
@@ -93,7 +93,7 @@
             </a>
             <a href="./public/Submissions.jsp" class="feature-box text-dark text-decoration-none">
                 <h4>Submissions</h4>
-                <p>Check your submission history.</p>
+                <p>Check submissions history.</p>
             </a>
             <a href="./public/Profile.jsp" class="feature-box text-dark text-decoration-none">
                 <h4>Profile</h4>

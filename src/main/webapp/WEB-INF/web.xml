@@ -5,10 +5,7 @@
          version="6.0">
 
     <welcome-file-list>
-        <welcome-file>register.html</welcome-file>
-        <welcome-file>login.html</welcome-file>
-        <welcome-file>reg-welcome.jsp</welcome-file>
-        <welcome-file>log-welcome.jsp</welcome-file>
+        <welcome-file>login.jsp</welcome-file>
     </welcome-file-list>
 
     <!-- User Servlet Configuration -->
@@ -19,6 +16,24 @@
     <servlet-mapping>
         <servlet-name>UserServlet</servlet-name>
         <url-pattern>/user/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TaskServlet</servlet-name>
+        <servlet-class>home.jakartasubmit.TaskServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TaskServlet</servlet-name>
+        <url-pattern>/task/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SubmissionServlet</servlet-name>
+        <servlet-class>home.jakartasubmit.SubmissionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SubmissionServlet</servlet-name>
+        <url-pattern>/submission/*</url-pattern>
     </servlet-mapping>
 
 <!--    &lt;!&ndash; Task Servlet Configuration &ndash;&gt;-->

@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import jakarta.servlet.http.HttpSession;
 
 //@WebServlet(name = "UserServlet", value = "/user-servlet")
 public class UserServlet extends HttpServlet {
@@ -37,10 +38,14 @@ public class UserServlet extends HttpServlet {
 
             try {
 //                response.getWriter().write("User successfully registered!");
-                userService.registerUser(user);
-                isSuccess = true;
-                message = "Student successfully registered!";
-                messageType = "success";  // Green success message
+                isSuccess = userService.registerUser(user);
+                if(isSuccess) {
+                    message = "User registered successfully";
+                    messageType = "success";
+                }else{
+                    message = "User registration failed, email in use.";
+                    messageType = "danger";
+                }
             } catch(Exception e) {
 //                response.getWriter().write("User registration failed.");
                 isSuccess = false;
@@ -68,22 +73,54 @@ public class UserServlet extends HttpServlet {
 
             try {
                 if (loginSuccessful) {
-    //                response.getWriter().write("Login successful!");
                     messageType = "success";
                     message = "Login successful!";
                     isSuccess = true;
+
+                    // Get HttpSession and store user info
+                    HttpSession session = request.getSession();
+                    session.setAttribute("userEmail", email);
+                    session.setAttribute("isLoggedIn", true);
+
+                    var loggedInUser = userService.getUserByEmail(email);
+                    session.setAttribute("userRole", loggedInUser.getRole());
+
+                    // Redirect based on role
+//                    RequestDispatcher dispatcher = null;
+                        response.getWriter().write("loggedin user "+ loggedInUser.getEmail() + " role: "+ loggedInUser.getRole());
+                        response.getWriter().write("Any role: "+ User.Role.ADMIN);
+                    if (loggedInUser.getRole() == User.Role.ADMIN) {
+                        RequestDispatcher dispatcher = request.getRequestDispatcher("admin.jsp");
+                        dispatcher.forward(request, response);
+                    } else if (loggedInUser.getRole() == User.Role.STUDENT) {
+                        RequestDispatcher dispatcher = request.getRequestDispatcher("student.jsp");
+                        dispatcher.forward(request, response);
+                    } else if (loggedInUser.getRole() == User.Role.INSTRUCTOR) {
+                        RequestDispatcher dispatcher = request.getRequestDispatcher("instructor.jsp");
+                        dispatcher.forward(request, response);
+                    }
                 }
-            } catch(Exception e) {
-//                response.getWriter().write("Invalid email or password.");
+            } catch (Exception e) {
                 isSuccess = false;
                 message = "Login failed. Please try again.";
                 messageType = "danger";
+                response.getWriter().write("Error msg: "+ e.getMessage());
             }
 
             request.setAttribute("message", message);
             request.setAttribute("messageType", messageType);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("log-welcome.jsp");
-            dispatcher.forward(request, response);
+//            RequestDispatcher dispatcher = request.getRequestDispatcher("/auth/register.jsp");
+//            dispatcher.forward(request, response);
+
+            response.setContentType("text/html");
+
+            // Hello
+            PrintWriter out = response.getWriter();
+            out.println("<html><body>");
+            out.println(
+                    "<div>Login failed!, <a href=\"register.jsp\">register<a> or <a href=\"login.jsp\">login again<a></div>"
+            );
+            out.println("</body></html>");
         }
 
     }
