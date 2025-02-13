@@ -1,6 +1,23 @@
-<<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="home.jakartasubmit.models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%
+    User loggedInUser = (User) request.getAttribute("loggedInUser");
+
+    if (loggedInUser != null) {
+        session.setAttribute("userEmail", loggedInUser.getEmail());
+        session.setAttribute("isLoggedIn", true);
+        session.setAttribute("userRole", loggedInUser.getRole().toString());
+    } else {
+        String userEmail = "asdf@gmail.com";
+        boolean isLoggedIn = true;
+        String userRole = "STUDENT";
+
+        session.setAttribute("userEmail", userEmail);
+        session.setAttribute("isLoggedIn", isLoggedIn);
+        session.setAttribute("userRole", userRole);
+    }
+%>
 
 <!DOCTYPE html>
 <html lang="en">

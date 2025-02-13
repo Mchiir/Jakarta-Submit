@@ -1,7 +1,11 @@
 package home.jakartasubmit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import home.jakartasubmit.models.Submission;
+import home.jakartasubmit.models.Task;
 import home.jakartasubmit.models.User;
+import home.jakartasubmit.services.SubmissionService;
+import home.jakartasubmit.services.TaskService;
 import home.jakartasubmit.services.UserService;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -12,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import jakarta.servlet.http.HttpSession;
@@ -19,6 +24,8 @@ import jakarta.servlet.http.HttpSession;
 //@WebServlet(name = "UserServlet", value = "/user-servlet")
 public class UserServlet extends HttpServlet {
     private final UserService userService = new UserService();
+    private final TaskService taskService = new TaskService();
+    private final SubmissionService submissionService = new SubmissionService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -77,18 +84,24 @@ public class UserServlet extends HttpServlet {
                     message = "Login successful!";
                     isSuccess = true;
 
-                    // Get HttpSession and store user info
-                    HttpSession session = request.getSession();
-                    session.setAttribute("userEmail", email);
-                    session.setAttribute("isLoggedIn", true);
+//                    HttpSession session = request.getSession();
+//                    session.setAttribute("userEmail", email);
+//                    session.setAttribute("isLoggedIn", true);
+//                    session.setAttribute("userRole", loggedInUser.getRole());
 
                     var loggedInUser = userService.getUserByEmail(email);
-                    session.setAttribute("userRole", loggedInUser.getRole());
+                    List<Task> tasks = taskService.getAllTasks();
+                    List<Submission> submissions = submissionService.getAllSubmissions();
+
+                    request.setAttribute("message", message);
+                    request.setAttribute("messageType", messageType);
+                    request.setAttribute("loggedInUser", loggedInUser);
+                    request.setAttribute("tasks", tasks);
+                    request.setAttribute("submissions", submissions);
+
+
 
                     // Redirect based on role
-//                    RequestDispatcher dispatcher = null;
-                        response.getWriter().write("loggedin user "+ loggedInUser.getEmail() + " role: "+ loggedInUser.getRole());
-                        response.getWriter().write("Any role: "+ User.Role.ADMIN);
                     if (loggedInUser.getRole() == User.Role.ADMIN) {
                         RequestDispatcher dispatcher = request.getRequestDispatcher("admin.jsp");
                         dispatcher.forward(request, response);
@@ -104,7 +117,7 @@ public class UserServlet extends HttpServlet {
                 isSuccess = false;
                 message = "Login failed. Please try again.";
                 messageType = "danger";
-                response.getWriter().write("Error msg: "+ e.getMessage());
+                response.getWriter().write("Error msg: " + e.getMessage());
             }
 
             request.setAttribute("message", message);
@@ -113,13 +126,9 @@ public class UserServlet extends HttpServlet {
 //            dispatcher.forward(request, response);
 
             response.setContentType("text/html");
-
-            // Hello
             PrintWriter out = response.getWriter();
             out.println("<html><body>");
-            out.println(
-                    "<div>Login failed!, <a href=\"register.jsp\">register<a> or <a href=\"login.jsp\">login again<a></div>"
-            );
+            out.println("<div>Login failed!, <a href=\"register.jsp\">register<a> or <a href=\"login.jsp\">login again<a></div>");
             out.println("</body></html>");
         }
 

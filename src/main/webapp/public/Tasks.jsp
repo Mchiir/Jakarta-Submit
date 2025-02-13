@@ -1,7 +1,26 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="home.jakartasubmit.models.Task" %>
+<%@ page import="home.jakartasubmit.models.User" %>
+<%@ page import="home.jakartasubmit.services.TaskService" %>
 
+<%
+    User loggedInUser = (User) request.getAttribute("loggedInUser");
+
+    if (loggedInUser != null) {
+        session.setAttribute("userEmail", loggedInUser.getEmail());
+        session.setAttribute("isLoggedIn", true);
+        session.setAttribute("userRole", loggedInUser.getRole().toString());
+    } else {
+        var userEmail = "asdf@gmail.com";
+        var isLoggedIn = true;
+        var userRole = "STUDENT";
+
+        session.setAttribute("userEmail", userEmail);
+        session.setAttribute("isLoggedIn", isLoggedIn);
+        session.setAttribute("userRole", userRole);
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,9 +52,11 @@
     </thead>
     <tbody>
     <%
-        List<Task> tasks = (List<Task>) request.getAttribute("tasks");
+//        List<Task> tasks = (List<Task>) request.getAttribute("tasks");
+        TaskService taskService = new TaskService();
+        List<Task> tasks = (List<Task>) taskService.getAllTasks();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        String userRole = (String) session.getAttribute("role"); // Assuming user role is stored in session
+        String userRole = (String) session.getAttribute("userRole"); // Correctly fetching the userRole from session
         for (Task task : tasks) {
     %>
     <tr>

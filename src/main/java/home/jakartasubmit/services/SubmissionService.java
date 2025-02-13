@@ -5,6 +5,7 @@ import home.jakartasubmit.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.util.List;
 import java.util.UUID;
 
 public class SubmissionService {
@@ -31,6 +32,13 @@ public class SubmissionService {
     public Submission getSubmissionById(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(Submission.class, id);  // Fetch submission by ID
+        }
+    }
+
+    // Fetch all submissions
+    public List<Submission> getAllSubmissions() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("from Submission", Submission.class).list();
         }
     }
 

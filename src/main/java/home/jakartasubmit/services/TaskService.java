@@ -5,6 +5,7 @@ import home.jakartasubmit.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.util.List;
 import java.util.UUID;
 
 public class TaskService {
@@ -31,6 +32,12 @@ public class TaskService {
     public Task getTaskById(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(Task.class, id);  // Fetch task by ID
+        }
+    }
+
+    public List<Task> getAllTasks() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("from Task").list();
         }
     }
 

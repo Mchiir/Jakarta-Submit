@@ -1,6 +1,31 @@
+<%@ page import="home.jakartasubmit.models.Submission" %>
+<%@ page import="java.util.List" %>
+<%@ page import="home.jakartasubmit.models.User" %>
+<%@ page import="home.jakartasubmit.services.SubmissionService" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    User loggedInUser = (User) request.getAttribute("loggedInUser");
+
+    if (loggedInUser != null) {
+        session.setAttribute("userEmail", loggedInUser.getEmail());
+        session.setAttribute("isLoggedIn", true);
+        session.setAttribute("userRole", loggedInUser.getRole().toString());
+    } else {
+        String userEmail = "asdf@gmail.com";
+        boolean isLoggedIn = true;
+        String userRole = "STUDENT";
+
+        session.setAttribute("userEmail", userEmail);
+        session.setAttribute("isLoggedIn", isLoggedIn);
+        session.setAttribute("userRole", userRole);
+    }
+
+    SubmissionService submissionService = new SubmissionService();
+    List<Submission> submissions = submissionService.getAllSubmissions(); // Ensure this method exists
+    String userRole = (String) session.getAttribute("userRole"); // Correctly fetching the userRole from session
+%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -33,33 +58,39 @@
     </tr>
     </thead>
     <tbody>
-    <c:forEach var="submission" items="${submissions}">
-        <tr>
-            <td>${submission.student.name}</td>
-            <td>${submission.task.courseName}</td>
-            <td><a href="<%= submission.getFilePath() %>" target="_blank">View File</a></td>
-            <td><fmt:formatDate value="${submission.submittedAt}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
-            <td>
-                    <%-- Only allow editing and deleting for instructors or admins --%>
-                <c:if test="${userRole == 'INSTRUCTOR' || userRole == 'ADMIN'}">
-                    <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
-                        <input type="hidden" name="action" value="edit">
-                        <input type="hidden" name="submissionId" value="${submission.submissionId}">
-                        <button type="submit" class="btn btn-primary btn-sm">Edit</button>
-                    </form>
-                    <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="submissionId" value="${submission.submissionId}">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
-                    </form>
-                </c:if>
-            </td>
-        </tr>
-    </c:forEach>
+    <%
+        for (Submission submission : submissions) {
+    %>
+    <tr>
+        <td><%= submission.getStudent().getFullName() %></td>
+        <td><%= submission.getTask().getCourseName() %></td>
+        <td><a href="<%= submission.getFilePath() %>" target="_blank">View File</a></td>
+        <td><%= submission.getSubmittedAt() %></td>
+        <td>
+            <% if ("INSTRUCTOR".equals(userRole) || "ADMIN".equals(userRole)) { %>
+            <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="submissionId" value="<%= submission.getSubmissionId() %>">
+                <button type="submit" class="btn btn-primary btn-sm">Edit</button>
+            </form>
+            <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="submissionId" value="<%= submission.getSubmissionId() %>">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
+            </form>
+            <% } else { %>
+            <span>View Only</span>
+            <% } %>
+        </td>
+    </tr>
+    <%
+        }
+    %>
     </tbody>
 </table>
 
 <h3>Add New Submission</h3>
+<% if ("INSTRUCTOR".equals(userRole) || "ADMIN".equals(userRole)) { %>
 <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="border p-4 rounded shadow-sm bg-light">
     <input type="hidden" name="action" value="add">
     <div class="mb-3">
@@ -84,6 +115,7 @@
     </div>
     <button type="submit" class="btn btn-success">Add Submission</button>
 </form>
+<% } %>
 
 <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
