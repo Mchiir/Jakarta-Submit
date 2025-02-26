@@ -1,42 +1,21 @@
-<%@ page import="home.jakartasubmit.models.Submission" %>
-<%@ page import="java.util.List" %>
-<%@ page import="home.jakartasubmit.models.User" %>
-<%@ page import="home.jakartasubmit.services.SubmissionService" %>
-<%@ page import="home.jakartasubmit.services.TaskService" %>
-<%@ page import="home.jakartasubmit.services.UserService" %>
-<%@ page import="home.jakartasubmit.models.Task" %>
-<%@ page import="java.util.stream.Collectors" %>
+<%@ page import="home.jakartasubmit.DTOs.UserDTO" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <%
-    User loggedInUser = (User) request.getAttribute("loggedInUser");
-
-    if (loggedInUser != null) {
-        session.setAttribute("userEmail", loggedInUser.getEmail());
-        session.setAttribute("isLoggedIn", true);
-        session.setAttribute("userRole", loggedInUser.getRole().toString());
-    } else {
-        String userEmail = "wilson@gmail.com";
-        boolean isLoggedIn = true;
-        String userRole = "STUDENT";
-
-        session.setAttribute("userEmail", userEmail);
-        session.setAttribute("isLoggedIn", isLoggedIn);
-        session.setAttribute("userRole", userRole);
+    HttpSession sessionObj = request.getSession(false);
+    if (sessionObj == null || sessionObj.getAttribute("isLoggedIn") == null) {
+        response.sendRedirect("login.jsp");
+        return;
     }
 
-    SubmissionService submissionService = new SubmissionService();
-    TaskService taskService = new TaskService();
-    UserService userService = new UserService();
-    List<Submission> submissions = submissionService.getAllSubmissions(); // Ensure this method exists
-    List<Task> tasks = taskService.getAllTasks();
-    List<User> usersList = userService.getAllUsers();
-    List students = usersList.stream()
-            .filter(user -> user.getRole() == User.Role.STUDENT)
-            .collect(Collectors.toList());
+    UserDTO currentUser = (UserDTO) sessionObj.getAttribute("currentUser");
 
-    String userRole = (String) session.getAttribute("userRole"); // Correctly fetching the userRole from session
+    if (currentUser == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
 %>
 
 <!DOCTYPE html>
@@ -53,7 +32,7 @@
 <%-- Display success or error messages --%>
 <% String message = (String) request.getAttribute("message"); %>
 <% if (message != null) { %>
-<div class="alert alert-info" role="alert">
+<div class="alert alert-${messageType == 'success' ? 'success' : 'danger'}" role="alert">
     <%= message %>
 </div>
 <% } %>
@@ -70,65 +49,86 @@
     </tr>
     </thead>
     <tbody>
-    <%
-        for (Submission submission : submissions) {
-    %>
-    <tr>
-        <td><%= submission.getStudent().getFullName() %></td>
-        <td><%= submission.getTask().getCourseName() %></td>
-        <td><a href="<%= submission.getFilePath() %>" target="_blank">View File</a></td>
-        <td><%= submission.getSubmittedAt() %></td>
-        <td>
-            <% if ("STUDENT".equals(userRole) || "ADMIN".equals(userRole)) { %>
-            <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
-                <input type="hidden" name="action" value="edit">
-                <input type="hidden" name="submissionId" value="<%= submission.getSubmissionId() %>">
-                <button type="submit" class="btn btn-primary btn-sm">Edit</button>
-            </form>
-            <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
-                <input type="hidden" name="action" value="delete">
-                <input type="hidden" name="submissionId" value="<%= submission.getSubmissionId() %>">
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
-            </form>
-            <% } else { %>
-            <span>View Only</span>
-            <% } %>
-        </td>
-    </tr>
-    <%
-        }
-    %>
+
+    <c:forEach items="${submissions}" var="submission">
+        <tr>
+            <c:choose>
+                <c:when test="not empty submission">
+                    <td>${submission.student.fullName}</td>
+                    <td>${submission.task.courseName}</td>
+                    <td><a href="${submission.filePath}" target="_blank">View File</a></td>
+                    <td>${submission.submittedAt}</td>
+                </c:when>
+                <c:otherwise>
+                    <td colspan="4">No submissions yet!</td>
+                </c:otherwise>
+            </c:choose>
+
+            <td>
+                <c:choose>
+                    <c:when test="${userRole == 'STUDENT' || userRole == 'ADMIN'}">
+                        <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
+                            <input type="hidden" name="action" value="edit">
+                            <input type="hidden" name="submissionId" value="${submission.submissionId}">
+                            <button type="submit" class="btn btn-primary btn-sm">Edit</button>
+                        </form>
+                        <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="submissionId" value="${submission.submissionId}">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
+                        </form>
+                    </c:when>
+                    <c:otherwise>
+                        <span>View Only</span>
+                    </c:otherwise>
+                </c:choose>
+            </td>
+        </tr>
+    </c:forEach>
     </tbody>
 </table>
 
 <h3>Add New Submission</h3>
-<% if ("STUDENT".equals(userRole)) { %>
-<form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="border p-4 rounded shadow-sm bg-light">
-    <input type="hidden" name="action" value="add">
-    <div class="mb-3">
-        <label class="form-label">Student:</label>
-        <select name="studentId" class="form-control" required>
-<%--            <c:forEach var="student" items="<%=students%>">--%>
-            <c:forEach var="student" items="${students}">
-                <option value="${student.userId}">${student.name}</option>
-            </c:forEach>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Task:</label>
-        <select name="taskId" class="form-control" required>
-            <c:forEach var="task" items="<%=tasks%>">
-                <option value="${task.taskId}">${task.courseName}</option>
-            </c:forEach>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">File Path:</label>
-        <input type="text" name="filePath" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-success">Add Submission</button>
-</form>
-<% } %>
+<c:if test="${sessionScope.userRole == 'STUDENT'}">
+    <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="border p-4 rounded shadow-sm bg-light">
+        <input type="hidden" name="action" value="add">
+        <div class="mb-3">
+            <label class="form-label">Student:</label>
+            <select name="studentId" class="form-control" required>
+                <c:choose>
+                    <c:when test="${not empty students}">
+                        <c:forEach var="student" items="${students}">
+                            <option value="${student.userId}">${student.name}</option>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <option disabled>No students available</option>
+                    </c:otherwise>
+                </c:choose>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Task:</label>
+            <select name="taskId" class="form-control" required>
+                <c:choose>
+                    <c:when test="${not empty tasks}">
+                        <c:forEach var="task" items="${tasks}">
+                            <option value="${task.taskId}">${task.courseName}</option>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <option disabled>No tasks available</option>
+                    </c:otherwise>
+                </c:choose>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">File Path:</label>
+            <input type="text" name="filePath" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success">Add Submission</button>
+    </form>
+</c:if>
 
 <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>

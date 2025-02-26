@@ -2,18 +2,27 @@ package home.jakartasubmit.services;
 
 import home.jakartasubmit.models.Submission;
 import home.jakartasubmit.models.Task;
+import home.jakartasubmit.models.User;
 import home.jakartasubmit.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 public class TaskService {
 
+    public boolean isValid(Task task) {
+        return task != null && task.getInstructor() != null && !task.getCourseName().isEmpty() &&
+                task.getCourseName().length() < 100 &&
+                !task.getDescription().isEmpty() && task.getDescription().length() < 255 &&
+                task.getDeadline() != null && !task.getDeadline().isBefore(LocalDateTime.now());
+    }
+
     // Register a new task (Save task to the database)
     public boolean registerTask(Task task) {
-        if (!task.isValid()) {
+        if (!isValid(task)) {
             System.out.println("Task is not valid.");
             return false;
         }
@@ -42,9 +51,15 @@ public class TaskService {
         }
     }
 
+    public List<Task> getTasksByInstructor(User instructor) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("from Task where instructor = :instructor", Task.class).setParameter("instructor", instructor).list();
+        }
+    }
+
     // Update an existing task
     public boolean updateTask(Task task) {
-        if (!task.isValid()) {
+        if (!isValid(task)) {
             System.out.println("Task is not valid.");
             return false;
         }

@@ -1,6 +1,7 @@
 package home.jakartasubmit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import home.jakartasubmit.DTOs.UserDTO;
 import home.jakartasubmit.models.User;
 import home.jakartasubmit.services.UserService;
 import jakarta.servlet.RequestDispatcher;
@@ -54,17 +55,18 @@ public class UserServlet extends HttpServlet {
 
         boolean loginSuccessful = userService.loginUser(email, password);
         if (loginSuccessful) {
-            User loggedInUser = userService.getUserByEmail(email);
+            UserDTO loggedInUser = userService.convertToDTO(userService.getUserByEmail(email));
+
             HttpSession session = request.getSession();
-            session.setAttribute("userEmail", email);
             session.setAttribute("isLoggedIn", true);
-            session.setAttribute("userRole", loggedInUser.getRole());
+            session.setAttribute("currentUser", loggedInUser);
 
             String dashboardPage = switch (loggedInUser.getRole()) {
                 case ADMIN -> "admin.jsp";
                 case STUDENT -> "student.jsp";
                 case INSTRUCTOR -> "instructor.jsp";
             };
+
             RequestDispatcher dispatcher = request.getRequestDispatcher(dashboardPage);
             dispatcher.forward(request, response);
         } else {

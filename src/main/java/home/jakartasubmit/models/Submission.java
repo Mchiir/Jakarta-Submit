@@ -3,13 +3,16 @@ package home.jakartasubmit.models;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "submissions")
-public class Submission {
+public class Submission implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -36,25 +39,6 @@ public class Submission {
         this.task = task;
         this.filePath = filePath;
         this.submittedAt = LocalDateTime.now();
-    }
-
-    public boolean isValid() {
-        // Validate the student field
-        if (student == null) {
-            return false;
-        }
-
-        // Validate the task field
-        if (task == null || !task.isValid()) {
-            return false;
-        }
-
-        // Validate the file path field
-        if (filePath == null || filePath.isEmpty() || !FileTypes.isValidFileType(filePath)) {
-            return false;
-        }
-
-        return true;  // All fields are valid
     }
 
     @Override

@@ -1,6 +1,8 @@
 package home.jakartasubmit.services;
 
+import home.jakartasubmit.models.FileTypes;
 import home.jakartasubmit.models.Submission;
+import home.jakartasubmit.models.User;
 import home.jakartasubmit.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -10,9 +12,16 @@ import java.util.UUID;
 
 public class SubmissionService {
 
+    public boolean isValid(Submission submission) {
+        return submission != null && submission.getStudent() != null &&
+                submission.getTask() != null &&
+                submission.getFilePath() != null && !submission.getFilePath().isEmpty() &&
+                FileTypes.isValidFileType(submission.getFilePath());
+    }
+
     // Register a new submission (Save submission to the database)
     public boolean registerSubmission(Submission submission) {
-        if (!submission.isValid()) {
+        if (!isValid(submission)) {
             System.out.println("Submission is not valid.");
             return false;
         }
@@ -42,9 +51,15 @@ public class SubmissionService {
         }
     }
 
+    public List<Submission> getSubmissionsByStudent(User student) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("from Submission where student = :student", Submission.class).setParameter("student", student).list();
+        }
+    }
+
     // Update an existing submission
     public boolean updateSubmission(Submission submission) {
-        if (!submission.isValid()) {
+        if (!isValid(submission)) {
             System.out.println("Submission is not valid.");
             return false;
         }

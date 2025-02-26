@@ -29,7 +29,7 @@ public class UserService {
 
     // Validate user before persisting
     public boolean isValid(User user) {
-        return user.getFullName() != null && !user.getFullName().isEmpty() && user.getFullName().length() <= 100 &&
+        return  user != null && user.getFullName() != null && !user.getFullName().isEmpty() && user.getFullName().length() <= 100 &&
                 user.getEmail() != null && !user.getEmail().isEmpty() && user.getEmail().length() <= 100 &&
                 user.getPassword() != null && !user.getPassword().isEmpty() && user.getPassword().length() <= 255 &&
                 user.getRole() != null;
@@ -122,6 +122,12 @@ public class UserService {
             Query<User> query = session.createQuery("FROM User WHERE email = :email", User.class);
             query.setParameter("email", email);
             return query.uniqueResult();
+        }
+    }
+
+    public List<User> getUsersByRole(User.Role role) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM User WHERE role = :role", User.class).setParameter("role", role).list();
         }
     }
 

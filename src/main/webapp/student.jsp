@@ -1,3 +1,4 @@
+<%@ page import="home.jakartasubmit.DTOs.UserDTO" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%
@@ -8,6 +9,7 @@
     }
 
     boolean isLoggedIn = sessionObj.getAttribute("isLoggedIn") != null;
+    UserDTO currentUser = (UserDTO) sessionObj.getAttribute("currentUser");
 %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -79,15 +81,15 @@
 <div class="header">Student</div>
 <div class="sidebar d-flex flex-column">
     <a href="#">Dashboard</a>
-    <a href="./public/Tasks.jsp">Tasks</a>
-    <a href="./public/Submissions.jsp">Submissions</a>
-    <a href="./public/Profile.jsp">Profile</a>
+    <a href="/Jakarta-Submit-1.0-SNAPSHOT/task">Tasks</a>
+    <a href="/Jakarta-Submit-1.0-SNAPSHOT/submission">Submissions</a>
+    <a href="/Jakarta-Submit-1.0-SNAPSHOT/user">Profile</a>
 </div>
 <div class="container p-4 flex-grow-1 content">
 
     <% if (isLoggedIn) { %>
     <div>
-        <h2>Welcome, <%= sessionObj.getAttribute("userEmail") %>!</h2>
+        <h2>Welcome, <%= currentUser.getEmail() %>!</h2>
         <p>Select an option from the sidebar.</p>
         <div class="dashboard-content">
             <a href="./public/Tasks.jsp" class="feature-box text-dark text-decoration-none">

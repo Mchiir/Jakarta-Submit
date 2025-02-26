@@ -3,13 +3,16 @@ package home.jakartasubmit.models;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
-public class Task {
+public class Task implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -35,26 +38,6 @@ public class Task {
         this.courseName = courseName;
         this.description = description;
         this.deadline = deadline;
-    }
-
-    public boolean isValid() {
-        if (instructor == null) {
-            return false;
-        }
-        if (courseName == null || courseName.isEmpty() || courseName.length() > 100) {
-            return false;
-        }
-
-        if (description == null || description.isEmpty() || description.length() > 100) {
-            return false;
-        }
-
-        // Validate the deadline (it should be a future date)
-        if (deadline == null || deadline.isBefore(LocalDateTime.now())) {
-            return false;
-        }
-
-        return true;  // All fields are valid
     }
 
     @Override
