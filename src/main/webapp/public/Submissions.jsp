@@ -2,6 +2,10 @@
 <%@ page import="java.util.List" %>
 <%@ page import="home.jakartasubmit.models.User" %>
 <%@ page import="home.jakartasubmit.services.SubmissionService" %>
+<%@ page import="home.jakartasubmit.services.TaskService" %>
+<%@ page import="home.jakartasubmit.services.UserService" %>
+<%@ page import="home.jakartasubmit.models.Task" %>
+<%@ page import="java.util.stream.Collectors" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -13,7 +17,7 @@
         session.setAttribute("isLoggedIn", true);
         session.setAttribute("userRole", loggedInUser.getRole().toString());
     } else {
-        String userEmail = "asdf@gmail.com";
+        String userEmail = "wilson@gmail.com";
         boolean isLoggedIn = true;
         String userRole = "STUDENT";
 
@@ -23,7 +27,15 @@
     }
 
     SubmissionService submissionService = new SubmissionService();
+    TaskService taskService = new TaskService();
+    UserService userService = new UserService();
     List<Submission> submissions = submissionService.getAllSubmissions(); // Ensure this method exists
+    List<Task> tasks = taskService.getAllTasks();
+    List<User> usersList = userService.getAllUsers();
+    List students = usersList.stream()
+            .filter(user -> user.getRole() == User.Role.STUDENT)
+            .collect(Collectors.toList());
+
     String userRole = (String) session.getAttribute("userRole"); // Correctly fetching the userRole from session
 %>
 
@@ -90,12 +102,13 @@
 </table>
 
 <h3>Add New Submission</h3>
-<% if ("INSTRUCTOR".equals(userRole) || "ADMIN".equals(userRole)) { %>
+<% if ("STUDENT".equals(userRole)) { %>
 <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="border p-4 rounded shadow-sm bg-light">
     <input type="hidden" name="action" value="add">
     <div class="mb-3">
         <label class="form-label">Student:</label>
         <select name="studentId" class="form-control" required>
+<%--            <c:forEach var="student" items="<%=students%>">--%>
             <c:forEach var="student" items="${students}">
                 <option value="${student.userId}">${student.name}</option>
             </c:forEach>
@@ -104,7 +117,7 @@
     <div class="mb-3">
         <label class="form-label">Task:</label>
         <select name="taskId" class="form-control" required>
-            <c:forEach var="task" items="${tasks}">
+            <c:forEach var="task" items="<%=tasks%>">
                 <option value="${task.taskId}">${task.courseName}</option>
             </c:forEach>
         </select>

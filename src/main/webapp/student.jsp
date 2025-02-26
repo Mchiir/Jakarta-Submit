@@ -1,29 +1,14 @@
-<%@ page import="home.jakartasubmit.models.User" %>
-<%
-//    if (userEmail == null || isLoggedIn == null || userRole == null) {
-//        response.sendRedirect("login.jsp");
-//        return;
-//    }
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-    User loggedInUser = (User) request.getAttribute("loggedInUser");
-    String userRole = null;
-    Boolean isLoggedIn = false;
-    String userEmail = null;
-    if (loggedInUser != null) {
-        userEmail = loggedInUser.getEmail();
-        isLoggedIn = true;
-        userRole = loggedInUser.getRole().toString();
+<%
+    HttpSession sessionObj = request.getSession(false);
+    if (sessionObj == null || sessionObj.getAttribute("isLoggedIn") == null) {
+        response.sendRedirect("login.jsp");
+        return;
     }
-    out.println("Email: "+ userEmail);
-    out.println("Role: "+ userRole);
-    out.println("Login: "+isLoggedIn);
+
+    boolean isLoggedIn = sessionObj.getAttribute("isLoggedIn") != null;
 %>
-<script>
-    console.log("User email:",<%=userEmail%>)
-    sessionStorage.setItem("userRole", <%= userRole %>)
-    sessionStorage.setItem("userEmail", <%= userEmail %>)
-    sessionStorage.setItem("isLoggedIn", <%= isLoggedIn %>)
-</script>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
@@ -100,8 +85,9 @@
 </div>
 <div class="container p-4 flex-grow-1 content">
 
+    <% if (isLoggedIn) { %>
     <div>
-        <h2>Welcome, <%= userEmail %>!</h2>
+        <h2>Welcome, <%= sessionObj.getAttribute("userEmail") %>!</h2>
         <p>Select an option from the sidebar.</p>
         <div class="dashboard-content">
             <a href="./public/Tasks.jsp" class="feature-box text-dark text-decoration-none">
@@ -118,6 +104,13 @@
             </a>
         </div>
     </div>
+    <% } else { %>
+    <div class="text-center">
+        <h2>You are not logged in</h2>
+        <a href="login.jsp" class="btn btn-primary">Login</a>
+    </div>
+    <% } %>
+
 </div>
 </body>
 </html>

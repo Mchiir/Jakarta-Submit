@@ -1,5 +1,7 @@
 package home.jakartasubmit.services;
 
+import home.jakartasubmit.DTOs.UserDTO;
+import home.jakartasubmit.models.Task;
 import home.jakartasubmit.models.User;
 import home.jakartasubmit.util.HibernateUtil;
 import org.hibernate.Session;
@@ -7,13 +9,35 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.List;
 import java.util.UUID;
 
 public class UserService {
 
+    public UserDTO convertToDTO(User user) {
+        return new UserDTO(user.getFullName(), user.getEmail(), user.getRole());
+    }
+
+    public User convertToEntity(UserDTO userDTO, String password) {
+        User user = new User();
+        user.setFullName(userDTO.getFullName());
+        user.setEmail(userDTO.getEmail().toLowerCase()); // Normalize email
+        user.setRole(userDTO.getRole());
+        user.setPassword(password); // Hashing is handled inside User entity
+        return user;
+    }
+
+    // Validate user before persisting
+    public boolean isValid(User user) {
+        return user.getFullName() != null && !user.getFullName().isEmpty() && user.getFullName().length() <= 100 &&
+                user.getEmail() != null && !user.getEmail().isEmpty() && user.getEmail().length() <= 100 &&
+                user.getPassword() != null && !user.getPassword().isEmpty() && user.getPassword().length() <= 255 &&
+                user.getRole() != null;
+    }
+
     // Register a new user (Save user to the database)
     public boolean registerUser(User user) {
-        if (!user.isValid()) {
+        if (!isValid(user)) {
             System.out.println("User is not valid.");
             return false;
         }
@@ -34,20 +58,12 @@ public class UserService {
         }
     }
 
-    // Fetch a user by ID
-    public User getUserById(UUID id) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(User.class, id);  // Fetch user by ID
-        }
-    }
-
+    // Login user with password verification
     public boolean loginUser(String email, String password) {
-        // Retrieve the user by email
-        User user = getUserByEmail(email);  // Method to query the database for user by email
+        User user = getUserByEmail(email);
 
         // If user doesn't exist or password is incorrect, return false
-        // if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
-        if (user == null) {
+        if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
             System.out.println("Invalid email or password.");
             return false;
         }
@@ -56,9 +72,22 @@ public class UserService {
         return true;
     }
 
+    public List<User> getAllUsers() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("from User", User.class).list();
+        }
+    }
+
+    // Fetch a user by ID
+    public User getUserById(UUID id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(User.class, id);
+        }
+    }
+
     // Update an existing user
     public boolean updateUser(User user) {
-        if (!user.isValid()) {
+        if (!isValid(user)) {
             System.out.println("User is not valid.");
             return false;
         }

@@ -30,7 +30,7 @@ public class TaskServlet extends HttpServlet {
         User instructor = userService.getUserById(instructorId);
 
         // Check if the instructor is valid
-        if (instructor.isValid()) {
+        if (userService.isValid(instructor)) {
             // Create the Task object
             Task task = new Task(instructor, courseName, description, deadline);
 

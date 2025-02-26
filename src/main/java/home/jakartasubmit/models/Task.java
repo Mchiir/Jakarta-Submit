@@ -38,7 +38,7 @@ public class Task {
     }
 
     public boolean isValid() {
-        if (instructor == null || !instructor.isValid()) {
+        if (instructor == null) {
             return false;
         }
         if (courseName == null || courseName.isEmpty() || courseName.length() > 100) {

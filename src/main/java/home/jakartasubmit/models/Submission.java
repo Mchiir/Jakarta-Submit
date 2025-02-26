@@ -40,7 +40,7 @@ public class Submission {
 
     public boolean isValid() {
         // Validate the student field
-        if (student == null || !student.isValid()) {
+        if (student == null) {
             return false;
         }
 

@@ -9,7 +9,6 @@
     String userRole = null;
     Boolean isLoggedIn = false;
     String userEmail = null;
-
     if (loggedInUser != null) {
         userEmail = loggedInUser.getEmail();
         isLoggedIn = true;
@@ -17,9 +16,9 @@
     }
 %>
 <script>
-    sessionStorage.setItem("userRole", <%=userRole%>)
-    sessionStorage.setItem("userEmail", <%=userEmail%>)
-    sessionStorage.setItem("isLoggedIn", <%=isLoggedIn%>)
+    sessionStorage.setItem("userRole", <%= userRole %>)
+    sessionStorage.setItem("userEmail", <%= userEmail %>)
+    sessionStorage.setItem("isLoggedIn", <%= isLoggedIn %>)
 </script>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>

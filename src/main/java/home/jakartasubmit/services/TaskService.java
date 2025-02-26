@@ -1,5 +1,6 @@
 package home.jakartasubmit.services;
 
+import home.jakartasubmit.models.Submission;
 import home.jakartasubmit.models.Task;
 import home.jakartasubmit.util.HibernateUtil;
 import org.hibernate.Session;
@@ -37,7 +38,7 @@ public class TaskService {
 
     public List<Task> getAllTasks() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from Task").list();
+            return session.createQuery("from Task", Task.class).list();
         }
     }
 

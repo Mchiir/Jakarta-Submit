@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -33,10 +34,15 @@
         <div class="d-flex justify-content-center">
             <button type="submit" class="btn btn-primary">Login</button>
         </div>
+
+        <%-- Display messages if available --%>
+        <c:if test="${not empty message}">
+            <p class="alert alert-${messageType} text-center" style="color: coral; font-size: 16px;" id="error_space">${message}</p> <!-- Error message space -->
+        </c:if>
+
         <div class="d-flex justify-content-center">
             <a href="register.jsp">Register</a>
         </div>
-
     </form>
 </div>
 
