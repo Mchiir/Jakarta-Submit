@@ -3,8 +3,8 @@
 <html>
 <head>
     <title>JSP - Hello World</title>
-    <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
 </head>
 <body class="d-flex justify-content-center align-items-center" style="height: 100vh; background-color: #f4f4f9;">
 

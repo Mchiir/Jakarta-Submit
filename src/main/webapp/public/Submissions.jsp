@@ -4,35 +4,48 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
-    HttpSession sessionObj = request.getSession(false);
-    if (sessionObj == null || sessionObj.getAttribute("isLoggedIn") == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
-
-    UserDTO currentUser = (UserDTO) sessionObj.getAttribute("currentUser");
-
-    if (currentUser == null) {
+    HttpSession sessionobj = request.getSession(false);
+    if (sessionobj == null || sessionobj.getAttribute("isLoggedIn") == null || !(boolean) sessionobj.getAttribute("isLoggedIn")) {
         response.sendRedirect("login.jsp");
         return;
     }
 %>
 
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submissions Manager</title>
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
 </head>
 <body class="container py-4">
-<h2 class="text-center mb-4">Submissions Manager</h2>
+<div class="position-relative p-3">
+    <!-- Back Button (Left-Aligned) -->
+    <c:choose>
+        <c:when test="${sessionScope.currentUser.role == 'STUDENT'}">
+            <a href="student.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
+        </c:when>
+        <c:when test="${sessionScope.currentUser.role == 'INSTRUCTOR'}">
+            <a href="instructor.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
+        </c:when>
+        <c:when test="${sessionScope.currentUser.role == 'ADMIN'}">
+            <a href="admin.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
+        </c:when>
+        <c:otherwise>
+            <a href="error.jsp" class="btn btn-outline-secondary position-absolute start-0">Back</a>
+        </c:otherwise>
+    </c:choose>
+
+    <!-- Page Title (Centered) -->
+    <h2 class="text-center mb-4">Submissions Manager</h2>
+</div>
 
 <%-- Display success or error messages --%>
 <% String message = (String) request.getAttribute("message"); %>
-<% if (message != null) { %>
-<div class="alert alert-${messageType == 'success' ? 'success' : 'danger'}" role="alert">
+<% String messageType = (String) request.getAttribute("messageType"); %>
+<% if (message != null && messageType != null) { %>
+<div class="alert alert-<%= "success".equals(messageType) ? "success" : "danger" %>" role="alert">
     <%= message %>
 </div>
 <% } %>
@@ -66,7 +79,7 @@
 
             <td>
                 <c:choose>
-                    <c:when test="${userRole == 'STUDENT' || userRole == 'ADMIN'}">
+                    <c:when test="${sessionScope.currentUser.role == 'STUDENT' || sessionScope.currentUser.role == 'ADMIN'}">
                         <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
                             <input type="hidden" name="action" value="edit">
                             <input type="hidden" name="submissionId" value="${submission.submissionId}">
@@ -89,7 +102,7 @@
 </table>
 
 <h3>Add New Submission</h3>
-<c:if test="${sessionScope.userRole == 'STUDENT'}">
+<c:if test="${sessionScope.currentUser.role == 'STUDENT'}">
     <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="border p-4 rounded shadow-sm bg-light">
         <input type="hidden" name="action" value="add">
         <div class="mb-3">
@@ -98,7 +111,7 @@
                 <c:choose>
                     <c:when test="${not empty students}">
                         <c:forEach var="student" items="${students}">
-                            <option value="${student.userId}">${student.name}</option>
+                            <option value="${student.userId}">${student.fullName}</option>
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
@@ -130,6 +143,6 @@
     </form>
 </c:if>
 
-<script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/WEB-INF/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

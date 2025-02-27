@@ -6,6 +6,7 @@ import home.jakartasubmit.models.User;
 import home.jakartasubmit.services.UserService;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-//@WebServlet(name = "UserServlet", value = "/user-servlet")
+@WebServlet(name = "UserServlet", value = "/user-servlet")
 public class UserServlet extends HttpServlet {
     private final UserService userService = new UserService();
 
@@ -57,9 +58,15 @@ public class UserServlet extends HttpServlet {
         if (loginSuccessful) {
             UserDTO loggedInUser = userService.convertToDTO(userService.getUserByEmail(email));
 
-            HttpSession session = request.getSession();
-            session.setAttribute("isLoggedIn", true);
-            session.setAttribute("currentUser", loggedInUser);
+            HttpSession session = request.getSession(false);
+            if(session != null){
+                session.invalidate();
+            }
+            HttpSession sessionObj = request.getSession(true);
+
+
+            sessionObj.setAttribute("isLoggedIn", true);
+            sessionObj.setAttribute("currentUser", loggedInUser);
 
             String dashboardPage = switch (loggedInUser.getRole()) {
                 case ADMIN -> "admin.jsp";
@@ -113,8 +120,8 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UUID userId = UUID.fromString(request.getParameter("id"));
-        User user = userService.getUserById(userId);
+        String email = request.getParameter("userEmail");
+        User user = userService.getUserByEmail(email);
 
         if (user != null) {
             user.setFullName(request.getParameter("fullName"));

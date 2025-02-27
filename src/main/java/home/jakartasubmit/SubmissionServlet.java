@@ -1,5 +1,6 @@
 package home.jakartasubmit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import home.jakartasubmit.DTOs.UserDTO;
 import home.jakartasubmit.models.Submission;
 import home.jakartasubmit.models.User;
@@ -27,43 +28,50 @@ public class SubmissionServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("currentUser") == null) {
-            response.sendRedirect("login.jsp");
-            return;
+        // Retreiving formData
+        HttpSession sessionobj = request.getSession(false);
+        UserDTO currentUserDTO = null;
+        if (sessionobj != null && sessionobj.getAttribute("isLoggedIn") != null) {
+            currentUserDTO = (UserDTO) sessionobj.getAttribute("currentUser");
         }
+        User.Role role = currentUserDTO.getRole();
+        String email = currentUserDTO.getEmail();
 
-        var currentUser = (UserDTO) session.getAttribute("currentUser");
-
-        var role = currentUser.getRole();
         List<Submission> submissions = new ArrayList<>();
         List<Task> tasks = new ArrayList<>();
         List<User> students = new ArrayList<>();
-        if(role != null){
-            if(role == User.Role.ADMIN) {
+
+        switch (role) {
+            case ADMIN:
                 submissions = submissionService.getAllSubmissions();
                 tasks = taskService.getAllTasks();
-            }
-            if (role == User.Role.INSTRUCTOR){
-                User instuctor = userService.getUserByEmail(currentUser.getEmail());
+                break;
+            case INSTRUCTOR:
+                User instructor = userService.getUserByEmail(currentUserDTO.getEmail());
                 submissions = submissionService.getAllSubmissions();
-                tasks = taskService.getTasksByInstructor(instuctor);
-            }
-            if (role == User.Role.STUDENT){
-                User student = userService.getUserByEmail(currentUser.getEmail());
+                tasks = taskService.getTasksByInstructor(instructor);
+                break;
+            case STUDENT:
+                User student = userService.getUserByEmail(currentUserDTO.getEmail());
                 submissions = submissionService.getSubmissionsByStudent(student);
                 students = userService.getUsersByRole(role);
                 tasks = taskService.getAllTasks();
-            }
+                break;
+            default:
+                response.sendRedirect("error.jsp"); // Handle unexpected role case
+                return;
         }
 
         if (submissions != null || tasks != null) {
             request.setAttribute("submissions", submissions);
             request.setAttribute("tasks", tasks);
             if(students != null){ request.setAttribute("students", students); }
+
+            request.setAttribute("currentUser", currentUserDTO);
+            request.setAttribute("isLoggedIn", true);
             request.setAttribute("message", "Submissions got successfully");
             request.setAttribute("messageType", "success");
-            request.getRequestDispatcher("submission.jsp").forward(request, response);
+            request.getRequestDispatcher("public/Submissions.jsp").forward(request, response);
         } else {
             request.setAttribute("message", "Error getting submissions");
             request.setAttribute("messageType", "danger");
