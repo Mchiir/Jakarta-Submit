@@ -25,8 +25,8 @@ public class HibernateUtil {
             //Postgresql
 //            settings.put(Environment.URL, "jdbc:mysql://localhost:3306/mymis_db");
             settings.put(Environment.URL, "jdbc:postgresql://localhost:5432/jakarta_submission_db");
-            settings.put(Environment.USER, "postgres");
-            settings.put(Environment.PASS, "asdf");
+            settings.put(Environment.USER, "guest");
+            settings.put(Environment.PASS, "guest");
 
             //PostgreSQL
             settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
