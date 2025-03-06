@@ -51,6 +51,14 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>4.0.5</version>
         </dependency>
+
+    <!-- Docs reading -->
+        <dependency>
+            <groupId>com.ironsoftware</groupId>
+            <artifactId>ironpdf</artifactId>
+            <version>2024.9.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

@@ -10,6 +10,7 @@ import org.hibernate.Transaction;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -39,6 +40,20 @@ public class SubmissionService {
         }
 
         return true;
+    }
+
+    public String getFileName(String filePath){
+        if (filePath == null || filePath.isEmpty()) {
+            return null; // Return null or handle the error as needed
+        }
+
+        Path path = Paths.get(filePath);
+        return path.getFileName().toString();
+    }
+
+    public String getFilePath(String fileName){
+        String basePath = "C:/Program Files/Apache Software Foundation/Tomcat 11.0/webapps/Jakarta-Submit-1.0-uploads/submissions/";
+        return basePath + fileName;
     }
 
     public String saveFileLocally(Part filePart) throws IOException {

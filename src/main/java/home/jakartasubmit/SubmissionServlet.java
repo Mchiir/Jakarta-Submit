@@ -1,5 +1,6 @@
 package home.jakartasubmit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import home.jakartasubmit.DTOs.UserDTO;
 import home.jakartasubmit.models.Submission;
 import home.jakartasubmit.models.User;
@@ -23,6 +24,7 @@ public class SubmissionServlet extends HttpServlet {
     private final SubmissionService submissionService = new SubmissionService();
     private final UserService userService = new UserService();
     private final TaskService taskService = new TaskService();
+    private List<String> imagePaths = new ArrayList<>();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -31,12 +33,33 @@ public class SubmissionServlet extends HttpServlet {
         if(action == null) {
             handleGetSubmissions(request, response);
         } else if ("view_file".equalsIgnoreCase(action)) {
-            handleSubmissionRegistration(request, response);
+            handleViewFile(request, response);
         }
     }
 
     private void handleViewFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String fileName = request.getParameter("fileName");
+        String filePath = submissionService.getFilePath(fileName);
+        File file = new File(filePath);
 
+        if (!file.exists() && file.getName().endsWith(".pdf")) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "PDF File not found or passed");
+            return;
+        }
+
+        PDFPreview pdfPreview = new PDFPreview();
+        List<String> imagePaths = pdfPreview.ConvertToImages(fileName, filePath);
+
+        if (imagePaths.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to convert PDF");
+            return;
+        }
+
+        // Convert list of image paths to JSON
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(imagePaths));
     }
 
     private void handleGetSubmissions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -73,6 +96,9 @@ public class SubmissionServlet extends HttpServlet {
                 response.sendRedirect("error.jsp"); // Handle unexpected role case
                 return;
         }
+
+        submissions.stream()
+                .forEach(submission -> submission.setFilePath(submissionService.getFileName(submission.getFilePath())));
 
         if (submissions != null || tasks != null) {
             request.setAttribute("submissions", submissions);

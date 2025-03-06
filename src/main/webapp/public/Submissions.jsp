@@ -66,7 +66,7 @@
                 <tr>
                     <td>${submission.student.fullName}</td>
                     <td>${submission.task.courseName}</td>
-                    <td><a href="${pageContext.request.contextPath}/submission?action=view_file&filePath=${submission.filePath}" target="_blank">View File</a></td>
+                    <td><a href="${pageContext.request.contextPath}/submission?action=view_file&fileName=${submission.filePath}" target="_blank">View File</a></td>
                     <td>${submission.submittedAt}</td>
 
                         <td>
