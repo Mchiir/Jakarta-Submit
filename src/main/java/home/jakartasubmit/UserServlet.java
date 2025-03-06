@@ -30,6 +30,8 @@ public class UserServlet extends HttpServlet {
             handleUserRegistration(request, response);
         } else if ("login".equalsIgnoreCase(action)) {
             handleUserLogin(request, response);
+        } else if("logout".equalsIgnoreCase(action)) {
+            handleLogOut(request, response);
         }
     }
 
@@ -81,6 +83,36 @@ public class UserServlet extends HttpServlet {
             PrintWriter out = response.getWriter();
             out.println("<html><body>");
             out.println("<div>Login failed! <a href=\"register.jsp\">Register</a> or <a href=\"login.jsp\">login again</a></div>");
+            out.println("</body></html>");
+        }
+    }
+
+    private void handleLogOut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+       response.setContentType("text/html");
+       PrintWriter out = response.getWriter();
+
+        try{
+            HttpSession session = request.getSession(false);
+            UserDTO currentUser = null;
+            Boolean isLoggedIn = false;
+            String dashboardPage = "";
+            if(session != null){
+                currentUser = (UserDTO) session.getAttribute("currentUser");
+                isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
+
+                dashboardPage = switch (currentUser.getRole()) {
+                    case ADMIN -> "admin.jsp";
+                    case STUDENT -> "student.jsp";
+                    case INSTRUCTOR -> "instructor.jsp";
+                };
+                session.invalidate();
+            }
+
+            Thread.sleep(1000);
+            request.getRequestDispatcher(dashboardPage).forward(request, response);
+        } catch (Exception e){
+            out.println("<html><body>");
+            out.println("<div>Error with Logout, "+ e.getMessage() +"</div>");
             out.println("</body></html>");
         }
     }

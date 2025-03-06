@@ -35,16 +35,56 @@
         left: 0;
         top: 50px;
         z-index: 999;
+
+        display: flex;
+        box-sizing: border-box;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-bottom: 70px; /* Adds spacing at the bottom */
       }
+
       .sidebar a {
         color: white;
         text-decoration: none;
         display: block;
         padding: 10px 20px;
+        background-color: transparent;
+        width: 100%;
       }
+
       .sidebar a:hover {
         background-color: #495057;
       }
+
+      .logout-container {
+        margin-top: auto;
+      }
+
+      .sidebar .logout-button {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px 20px;
+        background-color: transparent;
+        width: 100%;
+        border: 1px solid #343a40;
+        outline: 0;
+        height: 44px;
+      }
+      .sidebar .logout-button:hover {
+        background-color: white;
+      }
+
+      .sidebar {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .sidebar .logout-button:hover {
+        background-color: #ccc;
+        color: #343a40;
+      }
+
       .header {
         background-color: #37424d;
         color: white;
@@ -86,10 +126,20 @@
     <div class="header">STUDENT</div>
 
     <div class="sidebar d-flex flex-column">
-      <a href="#">Dashboard</a>
-      <a href="/Jakarta-Submit-1.0-SNAPSHOT/task">Tasks</a>
-      <a href="/Jakarta-Submit-1.0-SNAPSHOT/submission">Submissions</a>
-      <a href="public/Profile.jsp">Profile</a>
+      <div>
+        <a href="#">Dashboard</a>
+        <a href="/Jakarta-Submit-1.0-SNAPSHOT/task">Tasks</a>
+        <a href="/Jakarta-Submit-1.0-SNAPSHOT/submission">Submissions</a>
+        <a href="public/Profile.jsp">Profile</a>
+      </div>
+
+      <div class="logout-container">
+        <form action="/Jakarta-Submit-1.0-SNAPSHOT/user" method="POST">
+          <input type="hidden" name="action" value="logout">
+
+          <input type="submit" value="LOGOUT" class="logout-button">
+        </form>
+      </div>
     </div>
 
     <div class="container p-4 flex-grow-1 content">

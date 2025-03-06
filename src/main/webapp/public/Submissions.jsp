@@ -9,7 +9,7 @@
     }
 %>
 
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -72,13 +72,13 @@
                         <td>
                             <c:choose>
                                 <c:when test="${sessionScope.currentUser.role == 'STUDENT' || sessionScope.currentUser.role == 'ADMIN'}">
-                                    <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
+                                    <form action="${pageContext.request.contextPath}/submission" method="POST" class="d-inline">
                                         <input type="hidden" name="action" value="edit">
 
                                         <input type="hidden" name="submissionId" value="${submission.submissionId}">
                                         <button type="submit" class="btn btn-primary btn-sm">Edit</button>
                                     </form>
-                                    <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="d-inline">
+                                    <form action="${pageContext.request.contextPath}/submission" method="POST" class="d-inline">
                                         <input type="hidden" name="action" value="delete">
 
                                         <input type="hidden" name="submissionId" value="${submission.submissionId}">
@@ -106,12 +106,15 @@
 <c:if test="${sessionScope.currentUser.role != null and sessionScope.currentUser.role == 'STUDENT'}">
     <h3>Add New Submission</h3>
 
-    <form action="/Jakarta-Submit-1.0-SNAPSHOT/submission" method="POST" class="border p-4 rounded shadow-sm bg-light">
+    <form action="${pageContext.request.contextPath}/submission"
+          method="POST"
+          class="border p-4 rounded shadow-sm bg-light"
+            enctype="multipart/form-data">
         <input type="hidden" name="action" value="add">
 
         <div class="mb-3">
-            <label class="form-label">Task:</label>
-            <select name="taskId" class="form-control" required>
+            <label class="form-label" for="taskId">To which task:</label>
+            <select name="taskId" class="form-control" id="taskId" required>
                 <c:choose>
                     <c:when test="${not empty tasks}">
                         <c:forEach var="task" items="${tasks}">
@@ -124,10 +127,12 @@
                 </c:choose>
             </select>
         </div>
+
         <div class="mb-3">
-            <label class="form-label">File Path:</label>
-            <input type="text" name="filePath" class="form-control" required>
+            <label class="form-label">Upload File:</label>
+            <input type="file" name="submissionFile" class="form-control" accept=".pdf,.docx,.pptx,.zip,.xls,.xlsx" required>
         </div>
+
         <button type="submit" class="btn btn-success">Add Submission</button>
     </form>
 </c:if>

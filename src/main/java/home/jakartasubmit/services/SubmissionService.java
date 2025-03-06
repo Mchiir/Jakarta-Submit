@@ -1,29 +1,73 @@
 package home.jakartasubmit.services;
 
-import home.jakartasubmit.models.FileTypes;
 import home.jakartasubmit.models.Submission;
 import home.jakartasubmit.models.User;
 import home.jakartasubmit.util.HibernateUtil;
+import jakarta.servlet.http.Part;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class SubmissionService {
+    private final String UPLOAD_DIR = "C:/Program Files/Apache Software Foundation/Tomcat 11.0/webapps/Jakarta-Submit-1.0-uploads/submissions"; // Directory where files will be stored
 
     public boolean isValid(Submission submission) {
         return submission != null && submission.getStudent() != null &&
                 submission.getTask() != null &&
-                submission.getFilePath() != null && !submission.getFilePath().isEmpty() &&
-                FileTypes.isValidFileType(submission.getFilePath());
+                submission.getFilePath() != null;
+    }
+
+    public boolean isValidFile(Part filePart) throws IOException {
+        final Set<String> ALLOWED_EXTENSIONS = Set.of("pdf", "docx", "pptx", "zip", "xls", "xlsx");
+        final long MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB
+
+        String fileName = Path.of(filePart.getSubmittedFileName()).getFileName().toString();
+        String extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+
+        if (!ALLOWED_EXTENSIONS.contains(extension)) {
+            throw new IllegalArgumentException("Invalid file type. Allowed types: " + ALLOWED_EXTENSIONS);
+        }
+
+        if (filePart.getSize() > MAX_FILE_SIZE) {
+            throw new IllegalArgumentException("File size exceeds 30MB limit.");
+        }
+
+        return true;
+    }
+
+    public String saveFileLocally(Part filePart) throws IOException {
+        if (!isValidFile(filePart)) {
+            throw new IllegalArgumentException("File validation failed.");
+        }
+
+        File uploadFolder = new File(UPLOAD_DIR);
+        // Ensure directory exists
+        if (!uploadFolder.exists()) {
+            boolean result =  uploadFolder.mkdirs();
+            if (!result)
+                throw new IOException("Unable to create upload folder.");
+        }
+
+        // Generate unique filename
+        String fileName = System.currentTimeMillis() + "_" + Path.of(filePart.getSubmittedFileName()).getFileName().toString();
+        Path filePath = Path.of(UPLOAD_DIR, fileName);
+
+        // Save file
+        filePart.write(filePath.toString());
+
+        return filePath.toString(); // Return saved file path
     }
 
     // Register a new submission (Save submission to the database)
     public boolean registerSubmission(Submission submission) {
         if (!isValid(submission)) {
-            System.out.println("Submission is not valid.");
-            return false;
+            throw new IllegalArgumentException("Submission validation failed.");
         }
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -32,8 +76,7 @@ public class SubmissionService {
             transaction.commit();
             return true;
         } catch (Exception e) {
-            System.out.println("Error registering submission: " + e.getMessage());
-            return false;
+            throw new RuntimeException(e);
         }
     }
 

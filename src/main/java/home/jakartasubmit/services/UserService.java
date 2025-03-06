@@ -122,6 +122,8 @@ public class UserService {
             Query<User> query = session.createQuery("FROM User WHERE email = :email", User.class);
             query.setParameter("email", email);
             return query.uniqueResult();
+        }catch (Exception e){
+            throw new RuntimeException(e);
         }
     }
 

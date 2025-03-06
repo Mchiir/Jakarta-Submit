@@ -9,19 +9,17 @@ import home.jakartasubmit.services.SubmissionService;
 import home.jakartasubmit.services.TaskService;
 import home.jakartasubmit.services.UserService;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @WebServlet(name = "SubmissionServlet", value = "/submission-servlet")
+@MultipartConfig
 public class SubmissionServlet extends HttpServlet {
     private final SubmissionService submissionService = new SubmissionService();
     private final UserService userService = new UserService();
@@ -101,24 +99,43 @@ public class SubmissionServlet extends HttpServlet {
         }
 
         UUID taskId = UUID.fromString(request.getParameter("taskId"));
-        String filePath = request.getParameter("filePath");
+        String filePath = "";
+        Part filePart = request.getPart("submissionFile"); // Ensure the form has enctype="multipart/form-data"
 
-        User student = userService.getUserByEmail(currentUserDTO.getEmail());
-        Task task = taskService.getTaskById(taskId);
-
-        // Check if both student and task are found
-        if (student != null && task != null) {
-            // Create the submission object
-            Submission submission = new Submission(student, task, filePath);
-
-            // Register the submission via the service
-            if (submissionService.registerSubmission(submission)) {
-                response.getWriter().write("Submission created successfully!, <a href=\"public/Submissions.jsp\">Return back</a>");
-            } else {
-                response.getWriter().write("Submission creation failed. <a href=\"public/Submissions.jsp\">Return back</a>");
+        try{
+            // Ensure file is present
+            if (filePart == null || filePart.getSize() == 0) {
+                response.getWriter().write("No file uploaded. <a href=\"" + request.getContextPath() + "/public/Submissions.jsp\">Return back</a>");
+                return;
             }
-        } else {
-            response.getWriter().write("Invalid student or task. <a href=\"public/Submissions.jsp\">Return back</a>");
+
+            submissionService.isValidFile(filePart);
+            filePath = submissionService.saveFileLocally(filePart);
+
+            User student = userService.getUserByEmail(currentUserDTO.getEmail());
+            Task task = taskService.getTaskById(taskId);
+
+
+            // Check if both student and task are found
+            if (student != null && task != null) {
+
+                // Create the submission object
+                Submission submission = new Submission(student, task, filePath);
+
+                // Register the submission via the service
+                if (submissionService.registerSubmission(submission)) {
+                    // let's save the
+                    response.getWriter().write("Submission created successfully!, <a href=\"" + request.getContextPath() + "/submission\">Return back</a>");
+                } else {
+                    response.getWriter().write("Submission creation failed. <a href=\"" + request.getContextPath() + "/submission\">Return back</a>");
+                }
+            } else {
+                response.getWriter().write("Invalid student or task. <a href=\"" + request.getContextPath() + "/submission\">Return back</a>");
+            }
+        } catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);  // Set status code to 500
+            response.getWriter().write("Error with submission registration: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

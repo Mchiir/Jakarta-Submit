@@ -42,6 +42,8 @@ public class TaskService {
     public Task getTaskById(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(Task.class, id);  // Fetch task by ID
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
