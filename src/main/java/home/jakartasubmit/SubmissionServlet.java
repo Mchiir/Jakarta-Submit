@@ -1,6 +1,5 @@
 package home.jakartasubmit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import home.jakartasubmit.DTOs.UserDTO;
 import home.jakartasubmit.models.Submission;
 import home.jakartasubmit.models.User;
@@ -13,7 +12,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +26,20 @@ public class SubmissionServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        if(action == null) {
+            handleGetSubmissions(request, response);
+        } else if ("view_file".equalsIgnoreCase(action)) {
+            handleSubmissionRegistration(request, response);
+        }
+    }
+
+    private void handleViewFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    }
+
+    private void handleGetSubmissions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Retreiving formData
         HttpSession sessionobj = request.getSession(false);
         UserDTO currentUserDTO = null;
