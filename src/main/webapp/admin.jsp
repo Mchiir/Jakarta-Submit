@@ -10,11 +10,20 @@
 %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <html lang="en">
 <head>
     <title>ADMIN Dashboard</title>
-    <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-    <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link
+      href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <script src="${pageContext.request.contextPath}/bootstrap/js/bootstrap.bundle.min.js"></script>
     <style>
         .sidebar {
@@ -27,16 +36,50 @@
             left: 0;
             top: 50px;
             z-index: 999;
+
+            display: flex;
+            box-sizing: border-box;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-bottom: 70px; /* Adds spacing at the bottom */
         }
         .sidebar a {
             color: white;
             text-decoration: none;
             display: block;
             padding: 10px 20px;
+            background-color: transparent;
+            width: 100%;
         }
+
         .sidebar a:hover {
             background-color: #495057;
         }
+
+        .logout-container {
+            margin-top: auto;
+        }
+
+        .sidebar .logout-button {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+            background-color: transparent;
+            width: 100%;
+            border: 1px solid #343a40;
+            outline: 0;
+            height: 44px;
+        }
+        .sidebar .logout-button:hover {
+            background-color: white;
+        }
+
+        .sidebar .logout-button:hover {
+            background-color: #ccc;
+            color: #343a40;
+        }
+
         .header {
             background-color: #37424d;
             color: white;
@@ -77,10 +120,20 @@
 <body style="background-color: #f4f4f9;">
 <div class="header">ADMIN</div>
 <div class="sidebar d-flex flex-column">
-    <a href="#">Dashboard</a>
-    <a href="/Jakarta-Submit-1.0-SNAPSHOT/task">Tasks</a>
-    <a href="/Jakarta-Submit-1.0-SNAPSHOT/submission">Submissions</a>
-    <a href="public/Profile.jsp">Profile</a>
+    <div>
+        <a href="#">Dashboard</a>
+        <a href="${pageContext.request.contextPath}/task">Tasks</a>
+        <a href="${pageContext.request.contextPath}/submission">Submissions</a>
+        <a href="public/Profile.jsp">Profile</a>
+    </div>
+
+    <div class="logout-container">
+        <form action="${pageContext.request.contextPath}/user" method="POST">
+            <input type="hidden" name="action" value="logout">
+
+            <input type="submit" value="LOGOUT" class="logout-button">
+        </form>
+    </div>
 </div>
 <div class="container p-4 flex-grow-1 content">
 
@@ -90,17 +143,17 @@
         </c:if>
         <p>Select an option from the sidebar.</p>
         <div class="dashboard-content">
-            <a href="/Jakarta-Submit-1.0-SNAPSHOT/task" class="feature-box text-dark text-decoration-none">
+            <a href="${pageContext.request.contextPath}/task" class="feature-box text-dark text-decoration-none">
                 <h4>Tasks</h4>
                 <p>View and manage posted tasks.</p>
             </a>
-            <a href="/Jakarta-Submit-1.0-SNAPSHOT/submission" class="feature-box text-dark text-decoration-none">
+            <a href="${pageContext.request.contextPath}/submission" class="feature-box text-dark text-decoration-none">
                 <h4>Submissions</h4>
-                <p>Check submissions history.</p>
+                <p>View and manage submissions.</p>
             </a>
             <a href="public/Profile.jsp" class="feature-box text-dark text-decoration-none">
                 <h4>Profile</h4>
-                <p>Update your personal information.</p>
+                <p>Your personal profile.</p>
             </a>
         </div>
     </div>

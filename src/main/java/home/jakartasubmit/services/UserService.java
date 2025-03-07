@@ -38,13 +38,11 @@ public class UserService {
     // Register a new user (Save user to the database)
     public boolean registerUser(User user) {
         if (!isValid(user)) {
-            System.out.println("User is not valid.");
-            return false;
+            throw new RuntimeException("Invalid user data given");
         }
 
         if(getUserByEmail(user.getEmail()) != null) {
-            System.out.println("User Email already in use.");
-            return false;
+            throw new IllegalArgumentException("User Email already in use.");
         }
         
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -53,19 +51,20 @@ public class UserService {
             transaction.commit();
             return true;
         } catch (Exception e) {
-            System.out.println("Error registering user: " + e.getMessage());
-            return false;
+            throw new RuntimeException(e.getMessage());
         }
     }
 
     // Login user with password verification
     public boolean loginUser(String email, String password) {
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
+
         User user = getUserByEmail(email);
 
-        // If user doesn't exist or password is incorrect, return false
         if (user == null || !BCrypt.checkpw(password, user.getPassword())) {
-            System.out.println("Invalid email or password.");
-            return false;
+            throw new IllegalArgumentException("Invalid login credentials");
         }
 
         // Successful login

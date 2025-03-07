@@ -42,13 +42,41 @@ public class UserServlet extends HttpServlet {
         User.Role role = User.Role.valueOf(request.getParameter("role").toUpperCase());
 
         User user = new User(fullName, email, password, role);
-        boolean isSuccess = userService.registerUser(user);
-        String message = isSuccess ? "User registered successfully" : "User registration failed, email in use.";
-        String messageType = isSuccess ? "success" : "danger";
+        String message = null;
+        String messageType = null;
+        String page = null;
+
+        try{
+            if (userService.registerUser(user)) {
+                message = "User registered successfully!";
+                messageType = "success";
+                page = "login.jsp"; // Redirecting to login page after registration
+            } else {
+                message = "Registration failed. Please try again.";
+                messageType = "danger";
+                page = "register.jsp"; // Stay on registration page in case of failure
+            }
+        } catch (Exception e) {
+            message = "An error occurred during registration: " + e.getMessage();
+            messageType = "danger"; // Use danger type for errors
+            page = "register.jsp"; // Go back to the registration page
+
+            // Log the exception for better debugging
+            e.printStackTrace();
+        }
 
         request.setAttribute("message", message);
         request.setAttribute("messageType", messageType);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
+
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Forward the request to the appropriate page
+        RequestDispatcher dispatcher = request.getRequestDispatcher(page);
         dispatcher.forward(request, response);
     }
 
@@ -56,35 +84,56 @@ public class UserServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        boolean loginSuccessful = userService.loginUser(email, password);
-        if (loginSuccessful) {
-            UserDTO loggedInUser = userService.convertToDTO(userService.getUserByEmail(email));
+        String dashboardPage = "login.jsp"; // Default page on failure
+        String message = null;
+        String messageType = null;
 
-            HttpSession session = request.getSession(false);
-            if(session != null){
-                session.invalidate();
+        try {
+            // Attempt login
+            if (userService.loginUser(email.trim(), password.trim())) {
+                // Fetch user details and convert to DTO
+                UserDTO loggedInUser = userService.convertToDTO(userService.getUserByEmail(email));
+
+                // Invalidate any existing session
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    session.invalidate();
+                }
+
+                // Create a new session
+                HttpSession sessionObj = request.getSession(true);
+                sessionObj.setAttribute("isLoggedIn", true);
+                sessionObj.setAttribute("currentUser", loggedInUser);
+
+                // Determine the dashboard page based on the user's role
+                dashboardPage = switch (loggedInUser.getRole()) {
+                    case ADMIN -> "admin.jsp";
+                    case STUDENT -> "student.jsp";
+                    case INSTRUCTOR -> "instructor.jsp";
+                    default -> "login.jsp"; // Default fallback
+                };
+
+                // Redirect to the corresponding dashboard page
+                RequestDispatcher dispatcher = request.getRequestDispatcher(dashboardPage);
+                dispatcher.forward(request, response);
+                return; // Exit here as we've handled successful login
             }
-            HttpSession sessionObj = request.getSession(true);
 
+            // If login fails, set a failure message
+            message = "Login failed. Please try again.";
+            messageType = "danger";
 
-            sessionObj.setAttribute("isLoggedIn", true);
-            sessionObj.setAttribute("currentUser", loggedInUser);
-
-            String dashboardPage = switch (loggedInUser.getRole()) {
-                case ADMIN -> "admin.jsp";
-                case STUDENT -> "student.jsp";
-                case INSTRUCTOR -> "instructor.jsp";
-            };
-
-            RequestDispatcher dispatcher = request.getRequestDispatcher(dashboardPage);
-            dispatcher.forward(request, response);
-        } else {
-            response.setContentType("text/html");
-            PrintWriter out = response.getWriter();
-            out.println("<html><body>");
-            out.println("<div>Login failed! <a href=\"register.jsp\">Register</a> or <a href=\"login.jsp\">login again</a></div>");
-            out.println("</body></html>");
+        } catch (Exception e) {
+            // Handle any exceptions during login
+            message = "An error occurred during login: " + e.getMessage();
+            messageType = "danger"; // Error style
+            e.printStackTrace(); // Log the exception for debugging
         }
+
+        // Set the message and messageType, and forward to the appropriate page
+        request.setAttribute("message", message);
+        request.setAttribute("messageType", messageType);
+        request.getRequestDispatcher(dashboardPage).forward(request, response);
     }
 
     private void handleLogOut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -96,6 +145,7 @@ public class UserServlet extends HttpServlet {
             UserDTO currentUser = null;
             Boolean isLoggedIn = false;
             String dashboardPage = "";
+
             if(session != null){
                 currentUser = (UserDTO) session.getAttribute("currentUser");
                 isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");

@@ -40,14 +40,6 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    @PrePersist
-    public void hashPassword() {
-        if (password != null && !password.isEmpty()) {
-            int workFactor = Integer.parseInt("10");
-            this.password = BCrypt.hashpw(password, BCrypt.gensalt(workFactor));
-        }
-    }
-
     @Override
     public String toString() {
         return String.format("User{id=%s, fullName=%s, email=%s, role=%s}",

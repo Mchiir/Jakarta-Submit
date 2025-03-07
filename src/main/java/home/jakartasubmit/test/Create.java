@@ -14,6 +14,10 @@ public class Create {
         // Example 3: Admin User
         User instructor = new User("Charlie Brown", "brown@example.com", "hashedpassword789", User.Role.INSTRUCTOR);
 
+        //bell@gmail.com, bell12345, "ADMIN"
+        // brown@example.com, hashedpassword789, "INSTRUCTOR"
+        // mchrispin14@gmail.com, mugisha1234, "STUDENT"
+
         // Example 2: Creating a Task associated with the Instructor
         Task task = new Task(
                 instructor,  // Instructor for the task

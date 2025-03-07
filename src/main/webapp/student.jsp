@@ -10,6 +10,7 @@
 %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <html lang="en">
   <head>
     <title>Student Dashboard</title>
@@ -128,13 +129,13 @@
     <div class="sidebar d-flex flex-column">
       <div>
         <a href="#">Dashboard</a>
-        <a href="/Jakarta-Submit-1.0-SNAPSHOT/task">Tasks</a>
-        <a href="/Jakarta-Submit-1.0-SNAPSHOT/submission">Submissions</a>
+        <a href="${pageContext.request.contextPath}/task">Tasks</a>
+        <a href="${pageContext.request.contextPath}/submission">Submissions</a>
         <a href="public/Profile.jsp">Profile</a>
       </div>
 
       <div class="logout-container">
-        <form action="/Jakarta-Submit-1.0-SNAPSHOT/user" method="POST">
+        <form action="${pageContext.request.contextPath}/user" method="POST">
           <input type="hidden" name="action" value="logout">
 
           <input type="submit" value="LOGOUT" class="logout-button">
@@ -149,14 +150,14 @@
       <p>Select an option from the sidebar.</p>
       <div class="dashboard-content">
         <a
-          href="/Jakarta-Submit-1.0-SNAPSHOT/task"
+          href="${pageContext.request.contextPath}/task"
           class="nav-link feature-box text-dark text-decoration-none"
         >
           <h4>Tasks</h4>
           <p>View and manage posted tasks.</p>
         </a>
         <a
-          href="/Jakarta-Submit-1.0-SNAPSHOT/submission"
+          href="${pageContext.request.contextPath}/submission"
           class="nav-link feature-box text-dark text-decoration-none"
         >
           <h4>Submissions</h4>

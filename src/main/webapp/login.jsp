@@ -10,11 +10,20 @@
     <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
 </head>
 
-<body class="d-flex justify-content-center align-items-center"
+<body class="d-flex flex-column justify-content-center align-items-center"
       style="height: 100vh; background-color: #f4f4f9;">
 
+<%-- Display success or error messages --%>
+<% String message = (String) request.getAttribute("message"); %>
+<% String messageType = (String) request.getAttribute("messageType"); %>
+<% if (message != null && messageType != null) { %>
+<div style="text-align: center" class="alert alert-<%= "success".equals(messageType) ? "success" : "danger" %>" role="alert">
+    <%= message %>
+</div>
+<% } %>
+
 <!-- Container for Centered Content -->
-<div class="container bg-white p-4 rounded shadow" style="width: 30%; padding-top: 20px; padding-bottom: 20px;">
+<div class="container bg-white p-4 rounded shadow mt-1" style="width: 30%; padding-top: 20px; padding-bottom: 20px;">
     <p class="text-center mb-4" style="font-size: 2rem; font-weight: bold;">Login to Your Account</p>
 
     <!-- Form -->
@@ -36,11 +45,6 @@
         <div class="d-flex justify-content-center">
             <button type="submit" class="btn btn-primary">Login</button>
         </div>
-
-        <%-- Display messages if available --%>
-        <c:if test="${not empty message}">
-            <p class="alert alert-${messageType} text-center" style="color: coral; font-size: 16px;" id="error_space">${message}</p> <!-- Error message space -->
-        </c:if>
 
         <div class="d-flex justify-content-center">
             <a href="register.jsp">Register</a>
