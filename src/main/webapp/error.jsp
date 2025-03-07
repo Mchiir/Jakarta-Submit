@@ -10,7 +10,7 @@
 
     // Default message and messageType if not set
     if (message == null) {
-        message = "No new updates.";  // Default message
+        message = "This is the Fallback page";  // Default message
     }
     if (messageType == null) {
         messageType = "info";  // Default message type
