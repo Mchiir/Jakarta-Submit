@@ -1,10 +1,7 @@
 package home.jakartasubmit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import home.jakartasubmit.DTOs.UserDTO;
-import home.jakartasubmit.models.Submission;
-import home.jakartasubmit.models.User;
-import home.jakartasubmit.models.Task;
+import home.jakartasubmit.models.*;
 import home.jakartasubmit.services.SubmissionService;
 import home.jakartasubmit.services.TaskService;
 import home.jakartasubmit.services.UserService;
@@ -24,7 +21,6 @@ public class SubmissionServlet extends HttpServlet {
     private final SubmissionService submissionService = new SubmissionService();
     private final UserService userService = new UserService();
     private final TaskService taskService = new TaskService();
-    private List<String> imagePaths = new ArrayList<>();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -32,34 +28,42 @@ public class SubmissionServlet extends HttpServlet {
 
         if(action == null) {
             handleGetSubmissions(request, response);
-        } else if ("view_file".equalsIgnoreCase(action)) {
-            handleViewFile(request, response);
+        } else if ("download_file".equalsIgnoreCase(action)) {
+            handleDownloadFile(request, response);
         }
     }
 
-    private void handleViewFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void handleDownloadFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String fileName = request.getParameter("fileName");
+
+        String originalFileName = Files.formatFileName(fileName);
+
         String filePath = submissionService.getFilePath(fileName);
         File file = new File(filePath);
 
-        if (!file.exists() && file.getName().endsWith(".pdf")) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "PDF File not found or passed");
+        if (!file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found");
             return;
         }
 
-        PDFPreview pdfPreview = new PDFPreview();
-        List<String> imagePaths = pdfPreview.ConvertToImages(fileName, filePath);
-
-        if (imagePaths.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to convert PDF");
-            return;
+        // Determine MIME type
+        String mimeType = getServletContext().getMimeType(file.getName());
+        if (mimeType == null) {
+            mimeType = "application/octet-stream"; // Default if unknown
         }
 
-        // Convert list of image paths to JSON
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        ObjectMapper objectMapper = new ObjectMapper();
-        response.getWriter().write(objectMapper.writeValueAsString(imagePaths));
+        response.setContentType(mimeType);
+        response.setHeader("Content-Disposition", "inline; filename=\"" + originalFileName + "\"");
+
+        // Stream the file to the response
+        try (FileInputStream in = new FileInputStream(file);
+             OutputStream out = response.getOutputStream()) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+        }
     }
 
     private void handleGetSubmissions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -97,7 +101,7 @@ public class SubmissionServlet extends HttpServlet {
                 return;
         }
 
-        submissions.stream()
+        submissions
                 .forEach(submission -> submission.setFilePath(submissionService.getFileName(submission.getFilePath())));
 
         if (submissions != null || tasks != null) {
@@ -223,11 +227,13 @@ public class SubmissionServlet extends HttpServlet {
     }
 
     private void handleSubmissionDeletion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html; charset=UTF-8");
+
         UUID submissionId = UUID.fromString(request.getParameter("submissionId"));
         if (submissionService.deleteSubmission(submissionId)) {
-            response.getWriter().write("Submission deleted successfully. <a href=\"/Jakarta-Submit-1.0-SNAPSHOT/submission\">Return back</a>");
+            response.getWriter().write("Submission deleted successfully. <a href=\"" + request.getContextPath() + "/submission\">Return back</a>");
         } else {
-            response.getWriter().write("Error deleting submission. <a href=\"/Jakarta-Submit-1.0-SNAPSHOT/submission\">Return back</a>");
+            response.getWriter().write("Error deleting submission. <a href=\"" + request.getContextPath() + "/submission\">Return back</a>");
         }
     }
 }

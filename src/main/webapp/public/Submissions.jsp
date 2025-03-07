@@ -1,5 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib prefix="f" uri="http://example.com/functions" %>
 
 <%
     HttpSession sessionobj = request.getSession(false);
@@ -16,6 +17,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submissions Manager</title>
     <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 </head>
 <body class="container py-4">
 <div class="position-relative p-3">
@@ -48,12 +50,12 @@
 </div>
 <% } %>
 
-<h3>All Submissions</h3>
+<h3 style="text-align: center">Your Submissions</h3>
 <table class="table table-striped table-hover">
     <thead class="table-dark">
     <tr>
-        <th>Student</th>
-        <th>Task</th>
+        <th>To Task</th>
+        <th>Your submission</th>
         <th>File</th>
         <th>Submitted At</th>
         <th>Actions</th>
@@ -63,11 +65,13 @@
     <c:choose>
         <c:when test="${not empty submissions}"> <%-- EL --%>
             <c:forEach items="${submissions}" var="submission">
+
                 <tr>
-                    <td>${submission.student.fullName}</td>
                     <td>${submission.task.courseName}</td>
-                    <td><a href="${pageContext.request.contextPath}/submission?action=view_file&fileName=${submission.filePath}" target="_blank">View File</a></td>
-                    <td>${submission.submittedAt}</td>
+                    <td>${f:formatFileName(submission.filePath)}</td>
+
+                    <td><a href="${pageContext.request.contextPath}/submission?action=download_file&fileName=${submission.filePath}" target="_blank">Download</a></td>
+                    <td>${f:formatLocalDateTime(submission.submittedAt, 'EEE dd/MM/yyyy HH:mm:ss')}</td>
 
                         <td>
                             <c:choose>
@@ -104,7 +108,7 @@
 
 
 <c:if test="${sessionScope.currentUser.role != null and sessionScope.currentUser.role == 'STUDENT'}">
-    <h3>Add New Submission</h3>
+    <h3 style="text-align: center; margin-top: 30px">Add New Submission</h3>
 
     <form action="${pageContext.request.contextPath}/submission"
           method="POST"

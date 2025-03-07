@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -44,15 +45,28 @@ public class SubmissionService {
 
     public String getFileName(String filePath){
         if (filePath == null || filePath.isEmpty()) {
-            return null; // Return null or handle the error as needed
+            return null; // Handle empty input
         }
 
         Path path = Paths.get(filePath);
-        return path.getFileName().toString();
+        String extractedFileName = path.getFileName().toString();
+
+        // If the given filePath is already just a filename, return it as-is
+        if (filePath.equals(extractedFileName)) {
+            return filePath;
+        }
+
+        return extractedFileName;
     }
 
     public String getFilePath(String fileName){
         String basePath = "C:/Program Files/Apache Software Foundation/Tomcat 11.0/webapps/Jakarta-Submit-1.0-uploads/submissions/";
+
+        // If the fileName already contains the full base path, return it as-is
+        if (fileName.startsWith(basePath)) {
+            return fileName;
+        }
+
         return basePath + fileName;
     }
 
@@ -84,6 +98,9 @@ public class SubmissionService {
         if (!isValid(submission)) {
             throw new IllegalArgumentException("Submission validation failed.");
         }
+
+        String fileName = getFileName(submission.getFilePath());
+        submission.setFilePath(fileName);
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
