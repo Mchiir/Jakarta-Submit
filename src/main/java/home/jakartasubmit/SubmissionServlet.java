@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static home.jakartasubmit.models.User.Role.ADMIN;
-
 @WebServlet(name = "SubmissionServlet", value = "/submission-servlet")
 @MultipartConfig
 public class SubmissionServlet extends HttpServlet {
@@ -147,15 +145,9 @@ public class SubmissionServlet extends HttpServlet {
         UserDTO currentUserDTO = null;
         if (sessionobj != null && sessionobj.getAttribute("isLoggedIn") != null) {
             currentUserDTO = (UserDTO) sessionobj.getAttribute("currentUser");
+        }else{
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
-
-        String page = "";
-        page = switch (currentUserDTO.getRole()) {
-            case ADMIN -> "/admin/Submissions.jsp";
-            case INSTRUCTOR -> "/instructor/Submissions.jsp";
-            case STUDENT -> "/student/Submissions.jsp";
-            default -> page = "/error.jsp";
-        };
 
         UUID taskId = UUID.fromString(request.getParameter("taskId"));
         String filePath = "";
@@ -164,7 +156,7 @@ public class SubmissionServlet extends HttpServlet {
         try{
             // Ensure file is present
             if (filePart == null || filePart.getSize() == 0) {
-                response.getWriter().write("No file uploaded. <a href="+ request.getContextPath() + page +">Return back</a>");
+                response.getWriter().write("No file uploaded. <a href="+ request.getContextPath() + "/submission" +">Return back</a>");
                 return;
             }
 
@@ -254,29 +246,11 @@ public class SubmissionServlet extends HttpServlet {
 
         UUID submissionId = UUID.fromString(request.getParameter("submissionId"));
 
-        HttpSession sessionobj = request.getSession(false);
-        UserDTO currentUserDTO = null;
 
-        if (sessionobj != null && sessionobj.getAttribute("isLoggedIn") != null) {
-            currentUserDTO = (UserDTO) sessionobj.getAttribute("currentUser");
-        }
-
-        if (currentUserDTO == null) {
-            response.getWriter().write("Unauthorized access. <a href=\"login.jsp\">Return to Login</a>");
-            return;
-        }
-
-        String page = "";
-        page = switch (currentUserDTO.getRole()) {
-            case ADMIN -> "/admin/Submissions.jsp";
-            case INSTRUCTOR -> "/instructor/Submissions.jsp";
-            case STUDENT -> "/student/Submissions.jsp";
-            default -> page = "/error.jsp";
-        };
         if (submissionService.deleteSubmission(submissionId)) {
-            response.getWriter().write("Submission deleted successfully. <a href=" + request.getContextPath() + ">Return back</a>");
+            response.getWriter().write("Submission deleted successfully. <a href=" + request.getContextPath()+ "/submission" + ">Return back</a>");
         } else {
-            response.getWriter().write("Error deleting submission. <a href=" + request.getContextPath()+page + ">Return back</a>");
+            response.getWriter().write("Error deleting submission. <a href=" + request.getContextPath() + "/submission" + ">Return back</a>");
         }
     }
 }

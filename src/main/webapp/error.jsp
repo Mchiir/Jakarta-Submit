@@ -4,13 +4,24 @@
     <title>Error</title>
 </head>
 <body>
-    <%-- Display success or error messages --%>
-    <% String message = (String) request.getAttribute("message"); %>
-    <% String messageType = (String) request.getAttribute("messageType"); %>
-    <% if (message != null && messageType != null) { %>
-    <div class="alert alert-<%= "success".equals(messageType) ? "success" : "danger" %> align-content-center" role="alert">
-        <%= message %>
-    </div>
-    <% } %>
+<%
+    String message = (String) request.getAttribute("message");
+    String messageType = (String) request.getAttribute("messageType");
+
+    // Default message and messageType if not set
+    if (message == null) {
+        message = "No new updates.";  // Default message
+    }
+    if (messageType == null) {
+        messageType = "info";  // Default message type
+    }
+%>
+
+<% if (message != null && messageType != null) { %>
+<div class="alert alert-<%= "success".equals(messageType) ? "success" :
+                               ("danger".equals(messageType) ? "danger" : "info") %> align-content-center" role="alert">
+    <%= message %>
+</div>
+<% } %>
 </body>
 </html>
