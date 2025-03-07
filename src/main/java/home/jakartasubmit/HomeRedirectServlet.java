@@ -10,6 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("/") // Root URL mapping
 public class HomeRedirectServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect("login.jsp"); // Redirect to login page
+        response.sendRedirect("/auth/login.jsp"); // Redirect to login page
     }
 }

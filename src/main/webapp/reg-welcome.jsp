@@ -21,8 +21,8 @@
 
     <!-- Conditional Button -->
     <div class="d-flex justify-content-center gap-3">
-        <a href="register.jsp">Register</a>
-        <a href="login.jsp">Login</a>
+        <a href="auth/register.jsp">Register</a>
+        <a href="auth/login.jsp">Login</a>
     </div>
 </div>
 

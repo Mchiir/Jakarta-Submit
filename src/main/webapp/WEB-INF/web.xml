@@ -5,7 +5,7 @@
          version="6.0">
 
     <welcome-file-list>
-        <welcome-file>login.jsp</welcome-file>
+        <welcome-file>/auth/login.jsp</welcome-file>
     </welcome-file-list>
 
     <session-config>
@@ -13,6 +13,11 @@
     </session-config>
 
     <!-- User Servlet Configuration -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
+
     <servlet>
         <servlet-name>UserServlet</servlet-name>
         <servlet-class>home.jakartasubmit.UserServlet</servlet-class>
@@ -40,24 +45,24 @@
         <url-pattern>/submission/*</url-pattern>
     </servlet-mapping>
 
-<!--    &lt;!&ndash; Task Servlet Configuration &ndash;&gt;-->
-<!--    <servlet>-->
-<!--        <servlet-name>TaskServlet</servlet-name>-->
-<!--        <servlet-class>home.jakartasubmit.TaskServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>TaskServlet</servlet-name>-->
-<!--        <url-pattern>/task/*</url-pattern>-->
-<!--    </servlet-mapping>-->
+    <!--    &lt;!&ndash; Task Servlet Configuration &ndash;&gt;-->
+    <!--    <servlet>-->
+    <!--        <servlet-name>TaskServlet</servlet-name>-->
+    <!--        <servlet-class>home.jakartasubmit.TaskServlet</servlet-class>-->
+    <!--    </servlet>-->
+    <!--    <servlet-mapping>-->
+    <!--        <servlet-name>TaskServlet</servlet-name>-->
+    <!--        <url-pattern>/task/*</url-pattern>-->
+    <!--    </servlet-mapping>-->
 
-<!--    &lt;!&ndash; Submission Servlet Configuration &ndash;&gt;-->
-<!--    <servlet>-->
-<!--        <servlet-name>SubmissionServlet</servlet-name>-->
-<!--        <servlet-class>home.jakartasubmit.SubmissionServlet</servlet-class>-->
-<!--    </servlet>-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>SubmissionServlet</servlet-name>-->
-<!--        <url-pattern>/submission/*</url-pattern>-->
-<!--    </servlet-mapping>-->
+    <!--    &lt;!&ndash; Submission Servlet Configuration &ndash;&gt;-->
+    <!--    <servlet>-->
+    <!--        <servlet-name>SubmissionServlet</servlet-name>-->
+    <!--        <servlet-class>home.jakartasubmit.SubmissionServlet</servlet-class>-->
+    <!--    </servlet>-->
+    <!--    <servlet-mapping>-->
+    <!--        <servlet-name>SubmissionServlet</servlet-name>-->
+    <!--        <url-pattern>/submission/*</url-pattern>-->
+    <!--    </servlet-mapping>-->
 
 </web-app>

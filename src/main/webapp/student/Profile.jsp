@@ -1,5 +1,5 @@
 <%@ page import="home.jakartasubmit.DTOs.UserDTO" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%
     HttpSession sessionObj = request.getSession(false);
     if (sessionObj == null || sessionObj.getAttribute("isLoggedIn") == null) {
@@ -17,9 +17,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-    <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <script src="${pageContext.request.contextPath}/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <link href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <title>User Profile</title>
 </head>
 <body class="bg-light">
@@ -27,21 +26,7 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="mr-3">
-            <!-- Back Button (Left-Aligned) -->
-            <c:choose>
-                <c:when test="${sessionScope.currentUser.role == 'STUDENT'}">
-                    <a href="${pageContext.request.contextPath}/student/student.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
-                </c:when>
-                <c:when test="${sessionScope.currentUser.role == 'INSTRUCTOR'}">
-                    <a href="${pageContext.request.contextPath}/instructor/instructor.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
-                </c:when>
-                <c:when test="${sessionScope.currentUser.role == 'ADMIN'}">
-                    <a href="${pageContext.request.contextPath}/admin/admin.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/error.jsp" class="btn btn-outline-secondary position-absolute start-0">Back</a>
-                </c:otherwise>
-            </c:choose>
+            <a href="${pageContext.request.contextPath}/student/student.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
 
         </div>
 
@@ -60,7 +45,7 @@
                         </div>
 
                         <!-- Edit Profile Button -->
-                        <form action="/Jakarta-Submit-1.0-SNAPSHOT/user" method="POST" class="text-center mt-3">
+                        <form action="${pageContext.request.contextPath}/user" method="POST" class="text-center mt-3">
                             <input type="hidden" name="action" value="editProfile">
 
                             <input type="hidden" name="userEmail" value="${sessionScope.currentUser.email}">
@@ -71,7 +56,7 @@
                     <!-- Message if the user is not logged in -->
                     <c:if test="${empty sessionScope.currentUser.email}">
                         <div class="alert alert-warning text-center">
-                            <p>You are not logged in. <a href="login.jsp" class="alert-link">Login</a> to view your profile.</p>
+                            <p>You are not logged in. <a href="${pageContext.request.contextPath}/auth/login.jsp" class="alert-link">Login</a> to view your profile.</p>
                         </div>
                     </c:if>
                 </div>
@@ -80,5 +65,6 @@
     </div>
 </div>
 
+<script src="${pageContext.request.contextPath}/resources/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

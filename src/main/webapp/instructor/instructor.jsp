@@ -92,6 +92,7 @@
             width: 100%;
             z-index: 1000;
         }
+
         .content {
             margin-top: 50px;
             margin-left: 250px;
@@ -126,7 +127,7 @@
         <a href="#">Dashboard</a>
         <a href="${pageContext.request.contextPath}/task">Tasks</a>
         <a href="${pageContext.request.contextPath}/submission">Submissions</a>
-        <a href="public/Profile.jsp">Profile</a>
+        <a href="../public/Profile.jsp">Profile</a>
     </div>
 
     <div class="logout-container">
@@ -153,7 +154,7 @@
                 <h4>Submissions</h4>
                 <p>Check Students submissions history.</p>
             </a>
-            <a href="public/Profile.jsp" class="feature-box text-dark text-decoration-none">
+            <a href="../public/Profile.jsp" class="feature-box text-dark text-decoration-none">
                 <h4>Profile</h4>
                 <p>Update your personal information.</p>
             </a>

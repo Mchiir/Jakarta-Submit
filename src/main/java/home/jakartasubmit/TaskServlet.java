@@ -1,6 +1,5 @@
 package home.jakartasubmit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import home.jakartasubmit.DTOs.UserDTO;
 import home.jakartasubmit.models.Task;
 import home.jakartasubmit.models.User;
@@ -23,6 +22,60 @@ import java.util.*;
 public class TaskServlet extends HttpServlet {
     private final TaskService taskService = new TaskService();
     private final UserService userService = new UserService();
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        Map<String, Object> responseJson = new HashMap<>();
+
+        HttpSession session = request.getSession(false);
+        Boolean isLoggedIn = false;
+        UserDTO currentUser = null;
+        if (session != null) {
+            isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
+            currentUser = (UserDTO) session.getAttribute("currentUser");
+        }
+        User.Role role = currentUser.getRole();
+        String page = "";
+        page = switch (currentUser.getRole()) {
+            case ADMIN -> "/admin/Tasks.jsp";
+            case INSTRUCTOR -> "/instructor/Tasks.jsp";
+            case STUDENT -> "/student/Tasks.jsp";
+            default -> page = "/error.jsp";
+        };
+
+        List<Task> tasks = taskService.getAllTasks();
+        switch (role) {
+            case ADMIN:
+                tasks = taskService.getAllTasks();
+                break;
+            case INSTRUCTOR:
+                User instructor = userService.getUserByEmail(currentUser.getEmail());
+                tasks = taskService.getTasksByInstructor(instructor);
+                break;
+            case STUDENT:
+                User student = userService.getUserByEmail(currentUser.getEmail());
+                tasks = taskService.getAllTasks();
+                break;
+            default:
+                response.sendRedirect("error.jsp"); // Handle unexpected role case
+                return;
+        }
+
+        if (tasks != null) {
+            request.setAttribute("tasks", tasks);
+
+            request.setAttribute("message", "Submissions got successfully");
+            request.setAttribute("messageType", "success");
+            request.getRequestDispatcher(page).forward(request, response);
+        } else {
+            request.setAttribute("message", "Error getting submissions");
+            request.setAttribute("messageType", "danger");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -58,53 +111,6 @@ public class TaskServlet extends HttpServlet {
             }
         } else {
             response.getWriter().write("Instructor not found.");
-        }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        Map<String, Object> responseJson = new HashMap<>();
-
-        HttpSession session = request.getSession(false);
-        Boolean isLoggedIn = false;
-        UserDTO currentUser = null;
-        if (session != null) {
-            isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
-            currentUser = (UserDTO) session.getAttribute("currentUser");
-        }
-        User.Role role = currentUser.getRole();
-
-        List<Task> tasks = taskService.getAllTasks();
-        switch (role) {
-            case ADMIN:
-                tasks = taskService.getAllTasks();
-                break;
-            case INSTRUCTOR:
-                User instructor = userService.getUserByEmail(currentUser.getEmail());
-                tasks = taskService.getTasksByInstructor(instructor);
-                break;
-            case STUDENT:
-                User student = userService.getUserByEmail(currentUser.getEmail());
-                tasks = taskService.getAllTasks();
-                break;
-            default:
-                response.sendRedirect("error.jsp"); // Handle unexpected role case
-                return;
-        }
-
-        if (tasks != null) {
-            request.setAttribute("tasks", tasks);
-
-            request.setAttribute("message", "Submissions got successfully");
-            request.setAttribute("messageType", "success");
-            request.getRequestDispatcher("public/Tasks.jsp").forward(request, response);
-        } else {
-            request.setAttribute("message", "Error getting submissions");
-            request.setAttribute("messageType", "danger");
-            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
 

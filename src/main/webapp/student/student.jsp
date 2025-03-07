@@ -1,9 +1,9 @@
 <%@ page import="home.jakartasubmit.DTOs.UserDTO" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
 <%
   HttpSession sessionobj = request.getSession(false);
   if (sessionobj == null || sessionobj.getAttribute("isLoggedIn") == null || !(boolean) sessionobj.getAttribute("isLoggedIn")) {
-    response.sendRedirect("login.jsp");
+    response.sendRedirect("auth/login.jsp");
     return;
   }
   UserDTO currentUser = (UserDTO) sessionobj.getAttribute("currentUser");
@@ -15,16 +15,15 @@
   <head>
     <title>Student Dashboard</title>
     <link
-      href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.css"
+      href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.css"
       rel="stylesheet"
       type="text/css"
     />
     <link
-      href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css"
+      href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.min.css"
       rel="stylesheet"
       type="text/css"
     />
-    <script src="${pageContext.request.contextPath}/bootstrap/js/bootstrap.bundle.min.js"></script>
     <style>
       .sidebar {
         height: 100vh;
@@ -131,7 +130,7 @@
         <a href="#">Dashboard</a>
         <a href="${pageContext.request.contextPath}/task">Tasks</a>
         <a href="${pageContext.request.contextPath}/submission">Submissions</a>
-        <a href="public/Profile.jsp">Profile</a>
+        <a href="./Profile.jsp">Profile</a>
       </div>
 
       <div class="logout-container">
@@ -164,13 +163,15 @@
           <p>Check your submission history.</p>
         </a>
         <a
-          href="./public/Profile.jsp"
+          href="../public/Profile.jsp"
           class="feature-box text-dark text-decoration-none"
         >
           <h4>Profile</h4>
-          <p>Update your personal information.</p>
+          <p>Your personal information.</p>
         </a>
       </div>
     </div>
+
+    <script src="${pageContext.request.contextPath}/resources/bootstrap/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

@@ -50,16 +50,16 @@ public class UserServlet extends HttpServlet {
             if (userService.registerUser(user)) {
                 message = "User registered successfully!";
                 messageType = "success";
-                page = "login.jsp"; // Redirecting to login page after registration
+                page = "/auth/login.jsp"; // Redirecting to login page after registration
             } else {
                 message = "Registration failed. Please try again.";
                 messageType = "danger";
-                page = "register.jsp"; // Stay on registration page in case of failure
+                page = "/auth/register.jsp"; // Stay on registration page in case of failure
             }
         } catch (Exception e) {
             message = "An error occurred during registration: " + e.getMessage();
             messageType = "danger"; // Use danger type for errors
-            page = "register.jsp"; // Go back to the registration page
+            page = "/auth/register.jsp"; // Go back to the registration page
 
             // Log the exception for better debugging
             e.printStackTrace();
@@ -84,7 +84,7 @@ public class UserServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        String dashboardPage = "login.jsp"; // Default page on failure
+        String dashboardPage = "/auth/login.jsp"; // Default page on failure
         String message = null;
         String messageType = null;
 
@@ -107,10 +107,10 @@ public class UserServlet extends HttpServlet {
 
                 // Determine the dashboard page based on the user's role
                 dashboardPage = switch (loggedInUser.getRole()) {
-                    case ADMIN -> "admin.jsp";
-                    case STUDENT -> "student.jsp";
-                    case INSTRUCTOR -> "instructor.jsp";
-                    default -> "login.jsp"; // Default fallback
+                    case ADMIN -> "/admin/admin.jsp";
+                    case STUDENT -> "/student/student.jsp";
+                    case INSTRUCTOR -> "/instructor/instructor.jsp";
+                    default -> "/auth/login.jsp"; // Default fallback
                 };
 
                 // Redirect to the corresponding dashboard page
@@ -151,9 +151,9 @@ public class UserServlet extends HttpServlet {
                 isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
 
                 dashboardPage = switch (currentUser.getRole()) {
-                    case ADMIN -> "admin.jsp";
-                    case STUDENT -> "student.jsp";
-                    case INSTRUCTOR -> "instructor.jsp";
+                    case ADMIN -> "/admin/admin.jsp";
+                    case STUDENT -> "/student/student.jsp";
+                    case INSTRUCTOR -> "/instructor/instructor.jsp";
                 };
                 session.invalidate();
             }
