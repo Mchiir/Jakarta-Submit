@@ -74,6 +74,8 @@ public class SubmissionServlet extends HttpServlet {
         UserDTO currentUserDTO = null;
         if (sessionobj != null && sessionobj.getAttribute("isLoggedIn") != null) {
             currentUserDTO = (UserDTO) sessionobj.getAttribute("currentUser");
+        }else{
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
         User.Role role = currentUserDTO.getRole();
         String email = currentUserDTO.getEmail();
@@ -181,12 +183,12 @@ public class SubmissionServlet extends HttpServlet {
                 // Register the submission via the service
                 if (submissionService.registerSubmission(submission)) {
                     // let's save the
-                    response.getWriter().write("Submission created successfully!, <a href=" + request.getContextPath()+ page + ">Return back</a>");
+                    response.getWriter().write("Submission created successfully!, <a href=" + request.getContextPath()+ "/submission" +">Return back</a>");
                 } else {
-                    response.getWriter().write("Submission creation failed. <a href=" + request.getContextPath()+page + ">Return back</a>");
+                    response.getWriter().write("Submission creation failed. <a href=" + request.getContextPath()+ "/submission" + ">Return back</a>");
                 }
             } else {
-                response.getWriter().write("Invalid student or task. <a href=" + request.getContextPath()+page + ">Return back</a>");
+                response.getWriter().write("Invalid student or task. <a href=" + request.getContextPath()+ "/submission" + ">Return back</a>");
             }
         } catch (Exception e){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);  // Set status code to 500

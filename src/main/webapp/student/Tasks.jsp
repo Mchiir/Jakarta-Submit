@@ -81,7 +81,7 @@
     </tbody>
 </table>
 
-<c:if test="${sessionScope.currentUser.role != null and (sessionScope.currentUser.role == 'STUDENT' or sessionScope.currentUser.role == 'ADMIN')}">
+<c:if test="${sessionScope.currentUser.role != null and (sessionScope.currentUser.role == 'INSTRUCTOR' or sessionScope.currentUser.role == 'ADMIN')}">
 <!-- Add New Task form only visible for INSTRUCTOR or ADMIN -->
 <h3>Add New Task</h3>
 <form action="${pageContext.request.contextPath}/task" method="POST" class="border p-4 rounded shadow-sm bg-light">
@@ -95,8 +95,8 @@
         <textarea name="description" class="form-control" required></textarea>
     </div>
     <div class="mb-3">
-        <label class="form-label">Deadline:</label>
-        <input type="datetime-local" name="deadline" class="form-control" required>
+        <label class="form-label" for="deadline">Deadline:</label>
+        <input type="datetime-local" id="deadline" name="deadline" class="form-control" required>
     </div>
     <button type="submit" class="btn btn-success">Add Task</button>
 </form>
