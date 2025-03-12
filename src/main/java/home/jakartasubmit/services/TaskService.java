@@ -23,8 +23,7 @@ public class TaskService {
     // Register a new task (Save task to the database)
     public boolean registerTask(Task task) {
         if (!isValid(task)) {
-            System.out.println("Task is not valid.");
-            return false;
+            throw new IllegalArgumentException("Task is not valid");
         }
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -33,8 +32,7 @@ public class TaskService {
             transaction.commit();
             return true;
         } catch (Exception e) {
-            System.out.println("Error registering task: " + e.getMessage());
-            return false;
+            throw new RuntimeException(e.getMessage());
         }
     }
 

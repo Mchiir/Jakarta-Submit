@@ -91,7 +91,7 @@ public class SubmissionServlet extends HttpServlet {
                 break;
             case INSTRUCTOR:
                 User instructor = userService.getUserByEmail(currentUserDTO.getEmail());
-                submissions = submissionService.getAllSubmissions();
+                submissions = submissionService.getSubmissionsByInstructor(instructor);
                 tasks = taskService.getTasksByInstructor(instructor);
                 page = "/instructor/Submissions.jsp";
                 break;

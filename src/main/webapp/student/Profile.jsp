@@ -3,7 +3,7 @@
 <%
     HttpSession sessionObj = request.getSession(false);
     if (sessionObj == null || sessionObj.getAttribute("isLoggedIn") == null) {
-        response.sendRedirect("login.jsp");
+        response.sendRedirect("auth/login.jsp");
         return;
     }
 
@@ -19,7 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
     <link href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <title>User Profile</title>
+    <title>Profile</title>
 </head>
 <body class="bg-light">
 
@@ -33,7 +33,7 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white text-center">
-                    <h2>User Profile</h2>
+                    <h2>Your Profile</h2>
                 </div>
                 <div class="card-body">
                     <!-- Check if the user is logged in -->
@@ -49,16 +49,10 @@
                             <input type="hidden" name="action" value="editProfile">
 
                             <input type="hidden" name="userEmail" value="${sessionScope.currentUser.email}">
-                            <button type="submit" class="btn btn-primary">Edit Profile</button>
+                            <button type="submit" class="btn btn-primary">Change</button>
                         </form>
                     </c:if>
-
-                    <!-- Message if the user is not logged in -->
-                    <c:if test="${empty sessionScope.currentUser.email}">
-                        <div class="alert alert-warning text-center">
-                            <p>You are not logged in. <a href="${pageContext.request.contextPath}/auth/login.jsp" class="alert-link">Login</a> to view your profile.</p>
-                        </div>
-                    </c:if>
+                    
                 </div>
             </div>
         </div>

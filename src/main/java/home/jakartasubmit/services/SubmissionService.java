@@ -6,6 +6,7 @@ import home.jakartasubmit.util.HibernateUtil;
 import jakarta.servlet.http.Part;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,6 +124,18 @@ public class SubmissionService {
     public List<Submission> getAllSubmissions() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("from Submission", Submission.class).list();
+        }
+    }
+
+    public List<Submission> getSubmissionsByInstructor(User instructor) {
+        if (instructor == null) {
+            throw new IllegalArgumentException("Instructor cannot be null.");
+        }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "select s from Submission s join s.task t where t.instructor = :instructor";
+            Query<Submission> query = session.createQuery(hql, Submission.class);
+            query.setParameter("instructor", instructor);
+            return query.list();
         }
     }
 

@@ -163,7 +163,7 @@
           <p>Check your submission history.</p>
         </a>
         <a
-          href="../public/Profile.jsp"
+          href="./Profile.jsp"
           class="feature-box text-dark text-decoration-none"
         >
           <h4>Profile</h4>

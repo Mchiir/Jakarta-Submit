@@ -5,7 +5,7 @@
 <%
     HttpSession sessionobj = request.getSession(false);
     if (sessionobj == null || sessionobj.getAttribute("isLoggedIn") == null || !(boolean) sessionobj.getAttribute("isLoggedIn")) {
-        response.sendRedirect("login.jsp");
+        response.sendRedirect("auth/login.jsp");
         return;
     }
 %>
@@ -91,7 +91,7 @@
 </table>
 
 
-<c:if test="${sessionScope.currentUser.role != null and sessionScope.currentUser.role == 'STUDENT'}">
+<c:if test="${not empty sessionScope.currentUser.role and (sessionScope.currentUser.role == 'STUDENT' or sessionScope.currentUser.role == 'ADMIN')}">
     <h3 style="text-align: center; margin-top: 30px">Add New Submission</h3>
 
     <form action="${pageContext.request.contextPath}/submission"
@@ -106,7 +106,7 @@
                 <c:choose>
                     <c:when test="${not empty tasks}">
                         <c:forEach var="task" items="${tasks}">
-                            <option value="${task.taskId}">${task.courseName}</option>
+                            <option value="${task.taskId}"><span style="color: mediumseagreen; font-weight: bold;">${task.courseName}</span>: ${task.description}</option>
                         </c:forEach>
                     </c:when>
                     <c:otherwise>

@@ -5,7 +5,7 @@
 <%
     HttpSession sessionobj = request.getSession(false);
     if (sessionobj == null || sessionobj.getAttribute("isLoggedIn") == null || !(boolean) sessionobj.getAttribute("isLoggedIn")) {
-        response.sendRedirect("login.jsp");
+        response.sendRedirect("auth/login.jsp");
         return;
     }
 
@@ -80,27 +80,6 @@
     </c:forEach>
     </tbody>
 </table>
-
-<c:if test="${sessionScope.currentUser.role != null and (sessionScope.currentUser.role == 'INSTRUCTOR' or sessionScope.currentUser.role == 'ADMIN')}">
-<!-- Add New Task form only visible for INSTRUCTOR or ADMIN -->
-<h3>Add New Task</h3>
-<form action="${pageContext.request.contextPath}/task" method="POST" class="border p-4 rounded shadow-sm bg-light">
-    <input type="hidden" name="action" value="add">
-    <div class="mb-3">
-        <label class="form-label">Course Name:</label>
-        <input type="text" name="courseName" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Description:</label>
-        <textarea name="description" class="form-control" required></textarea>
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="deadline">Deadline:</label>
-        <input type="datetime-local" id="deadline" name="deadline" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-success">Add Task</button>
-</form>
-</c:if>
 
 <script src="${pageContext.request.contextPath}/resources/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -79,9 +79,31 @@ public class TaskServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        if(action == null) {
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        } else if ("add".equalsIgnoreCase(action)) {
+            handleRegisterTask(request, response);
+        } else if("delete".equalsIgnoreCase(action)) {
+            handleSubmissionDeletion(request, response);
+        }
+    }
+
+    private void handleRegisterTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html; charset=UTF-8");
+
+        // Retreiving formData
+        HttpSession sessionobj = request.getSession(false);
+        UserDTO currentUserDTO = null;
+        if (sessionobj != null && sessionobj.getAttribute("isLoggedIn") != null) {
+            currentUserDTO = (UserDTO) sessionobj.getAttribute("currentUser");
+        }else{
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+        String email = currentUserDTO.getEmail();
 
         // Retrieve parameters from the request
-        UUID instructorId = UUID.fromString(request.getParameter("instructorId"));
         String courseName = request.getParameter("courseName");
         String description = request.getParameter("description");
         LocalDateTime deadline = null;
@@ -97,20 +119,24 @@ public class TaskServlet extends HttpServlet {
             return; // Exit early
         }
 
-        User instructor = userService.getUserById(instructorId);
+        try{
+            User instructor = userService.getUserByEmail(email);
 
-        if (userService.isValid(instructor)) {
-            // Create the Task object
-            Task task = new Task(instructor, courseName, description, deadline);
+            if (userService.isValid(instructor)) {
+                // Create the Task object
+                Task task = new Task(instructor, courseName, description, deadline);
 
-            // Register the Task
-            if (taskService.registerTask(task)) {
-                response.getWriter().write("Task successfully created!");
+                // Register the Task
+                if (taskService.registerTask(task)) {
+                    response.getWriter().write("Task created successfully!, <a href=" + request.getContextPath()+ "/task" +">Return back</a>");
+                }
             } else {
-                response.getWriter().write("Task creation failed.");
+                response.getWriter().write("Task creation failed. <a href=" + request.getContextPath()+ "/task" + ">Return back</a>");
             }
-        } else {
-            response.getWriter().write("Instructor not found.");
+        } catch (Exception e){
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);  // Set status code to 500
+            response.getWriter().write("Error with submission registration: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -136,5 +162,18 @@ public class TaskServlet extends HttpServlet {
         UUID taskId = UUID.fromString(request.getParameter("id"));
         boolean isDeleted = taskService.deleteTask(taskId);
         response.getWriter().write(isDeleted ? "Task deleted successfully." : "Task update failed.");
+    }
+
+    private void handleSubmissionDeletion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html; charset=UTF-8");
+
+        UUID taskId = UUID.fromString(request.getParameter("taskId"));
+
+
+        if (taskService.deleteTask(taskId)) {
+            response.getWriter().write("Task deleted successfully. <a href=" + request.getContextPath()+ "/task" + ">Return back</a>");
+        } else {
+            response.getWriter().write("Error deleting task. <a href=" + request.getContextPath() + "/task" + ">Return back</a>");
+        }
     }
 }
