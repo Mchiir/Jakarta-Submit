@@ -63,6 +63,8 @@ public class SubmissionServlet extends HttpServlet {
             while ((bytesRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
             }
+
+            out.flush(); // preventing incomplete downloads
         }
     }
 
@@ -184,7 +186,8 @@ public class SubmissionServlet extends HttpServlet {
             }
         } catch (Exception e){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);  // Set status code to 500
-            response.getWriter().write("Error with submission registration: " + e.getMessage());
+            response.getWriter().write("Error with submission registration: " + e.getMessage() +
+                    "<br> <a href=\"" + request.getContextPath() + "/submission\">Return back</a>");
             e.printStackTrace();
         }
     }

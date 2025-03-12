@@ -86,7 +86,7 @@ public class TaskServlet extends HttpServlet {
         } else if ("add".equalsIgnoreCase(action)) {
             handleRegisterTask(request, response);
         } else if("delete".equalsIgnoreCase(action)) {
-            handleSubmissionDeletion(request, response);
+            handleTaskDeletion(request, response);
         }
     }
 
@@ -157,23 +157,16 @@ public class TaskServlet extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UUID taskId = UUID.fromString(request.getParameter("id"));
-        boolean isDeleted = taskService.deleteTask(taskId);
-        response.getWriter().write(isDeleted ? "Task deleted successfully." : "Task update failed.");
-    }
-
-    private void handleSubmissionDeletion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void handleTaskDeletion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html; charset=UTF-8");
 
         UUID taskId = UUID.fromString(request.getParameter("taskId"));
 
-
-        if (taskService.deleteTask(taskId)) {
+        try{
+            taskService.deleteTask(taskId);
             response.getWriter().write("Task deleted successfully. <a href=" + request.getContextPath()+ "/task" + ">Return back</a>");
-        } else {
-            response.getWriter().write("Error deleting task. <a href=" + request.getContextPath() + "/task" + ">Return back</a>");
+        } catch(Exception e) {
+            response.getWriter().write("Error deleting task: "+ e.getMessage() +"<br><a href=" + request.getContextPath() + "/task" + ">Return back</a>");
         }
     }
 }

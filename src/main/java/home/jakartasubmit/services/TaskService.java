@@ -76,16 +76,16 @@ public class TaskService {
     }
 
     // Delete a task by ID
-    public boolean deleteTask(UUID id) {
+    public void deleteTask(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             Task task = session.get(Task.class, id);  // Retrieve task by ID
             if (task != null) {
                 session.remove(task);  // Delete the task if it exists
                 transaction.commit();
-                return true;
             }
-            return false;
+        } catch (Exception e){
+            throw new RuntimeException(e.getMessage());
         }
     }
 }

@@ -118,7 +118,10 @@
 
         <div class="mb-3">
             <label class="form-label">Upload File:</label>
-            <input type="file" name="submissionFile" class="form-control" accept=".pdf,.docx,.pptx,.zip,.xls,.xlsx" required>
+            <input type="file" name="submissionFile" class="form-control" 
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar,.7z,.tar.gz,.jpg,.jpeg,.png,.gif,.tiff,.psd,.ai,.svg" 
+                required
+            >
         </div>
 
         <button type="submit" class="btn btn-success">Add Submission</button>

@@ -27,7 +27,17 @@ public class SubmissionService {
     }
 
     public boolean isValidFile(Part filePart) throws IOException {
-        final Set<String> ALLOWED_EXTENSIONS = Set.of("pdf", "docx", "pptx", "zip", "xls", "xlsx");
+        final Set<String> ALLOWED_EXTENSIONS = Set.of(
+                // Document formats
+                "pdf", "docx", "doc", "pptx", "ppt", "xls", "xlsx",
+
+                // Compressed formats
+                "zip", "rar", "7z", "tar.gz",
+
+                // Image formats
+                "jpg", "jpeg", "png", "gif", "tiff", "psd", "ai", "svg"
+        );
+
         final long MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB
 
         String fileName = Path.of(filePart.getSubmittedFileName()).getFileName().toString();
