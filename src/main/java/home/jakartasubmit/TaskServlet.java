@@ -114,6 +114,7 @@ public class TaskServlet extends HttpServlet {
             response.getWriter().write("Invalid deadline format. Please use a valid date-time format.");
             return; // Exit early
         }
+
         if (courseName == null || courseName.isEmpty() || description == null || description.isEmpty()) {
             response.getWriter().write("Course name and description are required.");
             return; // Exit early

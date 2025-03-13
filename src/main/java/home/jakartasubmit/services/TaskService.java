@@ -23,10 +23,13 @@ public class TaskService {
             throw new SecurityException("Only instructors can perform this operation");
         }
 
+        if(task.getDeadline() != null && task.getDeadline().isBefore(LocalDateTime.now())){
+            throw new IllegalArgumentException("Task deadline is now. Students must be given time to complete task.");
+        }
+
         return !task.getCourseName().isEmpty() &&
                 task.getCourseName().length() < 100 &&
-                !task.getDescription().isEmpty() && task.getDescription().length() < 255 &&
-                task.getDeadline() != null && !task.getDeadline().isBefore(LocalDateTime.now());
+                !task.getDescription().isEmpty() && task.getDescription().length() < 255;
     }
 
     // Register a new task (Save task to the database)
@@ -36,6 +39,8 @@ public class TaskService {
                 Transaction transaction = session.beginTransaction();
                 session.persist(task);  // Save the task
                 transaction.commit();
+            }else {
+                throw new IllegalArgumentException("Task is not valid.");
             }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
