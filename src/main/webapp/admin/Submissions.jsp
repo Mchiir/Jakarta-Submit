@@ -5,7 +5,7 @@
 <%
     HttpSession sessionobj = request.getSession(false);
     if (sessionobj == null || sessionobj.getAttribute("isLoggedIn") == null || !(boolean) sessionobj.getAttribute("isLoggedIn")) {
-        response.sendRedirect("login.jsp");
+        response.sendRedirect("auth/login.jsp");
         return;
     }
 %>
@@ -16,26 +16,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submissions Manager</title>
-    <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <link href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script> -->
 </head>
 <body class="container py-4">
 <div class="position-relative p-3">
-    <!-- Back Button (Left-Aligned) -->
-    <c:choose>
-        <c:when test="${sessionScope.currentUser.role == 'STUDENT'}">
-            <a href="student.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
-        </c:when>
-        <c:when test="${sessionScope.currentUser.role == 'INSTRUCTOR'}">
-            <a href="instructor.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
-        </c:when>
-        <c:when test="${sessionScope.currentUser.role == 'ADMIN'}">
-            <a href="admin.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
-        </c:when>
-        <c:otherwise>
-            <a href="error.jsp" class="btn btn-outline-secondary position-absolute start-0">Back</a>
-        </c:otherwise>
-    </c:choose>
+    <a href="${pageContext.request.contextPath}/admin/admin.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
 
     <!-- Page Title (Centered) -->
     <h2 class="text-center mb-4">Submissions Manager</h2>
@@ -50,13 +36,15 @@
 </div>
 <% } %>
 
-<h3 style="text-align: center">Your Submissions</h3>
+<h3 style="text-align: center">Submissions</h3>
 <table class="table table-striped table-hover">
     <thead class="table-dark">
     <tr>
-        <th>To Task</th>
-        <th>Your submission</th>
+        <th>Student email</th>
+        <th>Submission</th>
         <th>File</th>
+        <th>To Task</th>
+        <th>instructor's email</th>
         <th>Submitted At</th>
         <th>Actions</th>
     </tr>
@@ -67,12 +55,15 @@
             <c:forEach items="${submissions}" var="submission">
 
                 <tr>
-                    <td>${submission.task.courseName}</td>
+                    <td>${submission.student.email}</td>
                     <td>${f:formatFileName(submission.filePath)}</td>
-
                     <td><a href="${pageContext.request.contextPath}/submission?action=download_file&fileName=${submission.filePath}" target="_blank">Download</a></td>
+                    
+                    <td>${submission.task.courseName}</td>
+                    <td>${submission.task.instructor.email}</td>
+                    
                     <td>${f:formatLocalDateTime(submission.submittedAt, 'EEE dd/MM/yyyy HH:mm:ss')}</td>
-
+                    
                         <td>
                             <c:choose>
                                 <c:when test="${sessionScope.currentUser.role == 'STUDENT' || sessionScope.currentUser.role == 'ADMIN'}">
@@ -107,7 +98,7 @@
 </table>
 
 
-<c:if test="${sessionScope.currentUser.role != null and sessionScope.currentUser.role == 'STUDENT'}">
+<c:if test="${sessionScope.currentUser.role != null and (sessionScope.currentUser.role == 'STUDENT' or sessionScope.currentUser.role == 'ADMIN')}">
     <h3 style="text-align: center; margin-top: 30px">Add New Submission</h3>
 
     <form action="${pageContext.request.contextPath}/submission"
@@ -122,7 +113,7 @@
                 <c:choose>
                     <c:when test="${not empty tasks}">
                         <c:forEach var="task" items="${tasks}">
-                            <option value="${task.taskId}">${task.courseName}</option>
+                            <option value="${task.taskId}"><span style="color: mediumseagreen; font-weight: bold;">${task.courseName}</span>: ${task.description}</option>
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
@@ -134,13 +125,16 @@
 
         <div class="mb-3">
             <label class="form-label">Upload File:</label>
-            <input type="file" name="submissionFile" class="form-control" accept=".pdf,.docx,.pptx,.zip,.xls,.xlsx" required>
+            <input type="file" name="submissionFile" class="form-control" 
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar,.7z,.tar.gz,.jpg,.jpeg,.png,.gif,.tiff,.psd,.ai,.svg" 
+                required
+            >
         </div>
 
         <button type="submit" class="btn btn-success">Add Submission</button>
     </form>
 </c:if>
 
-<script src="${pageContext.request.contextPath}/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

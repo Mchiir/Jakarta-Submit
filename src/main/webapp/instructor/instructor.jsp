@@ -126,7 +126,7 @@
         <a href="#">Dashboard</a>
         <a href="${pageContext.request.contextPath}/task">Tasks</a>
         <a href="${pageContext.request.contextPath}/submission">Submissions</a>
-        <a href="./Profile.jsp">Profile</a>
+        <a href="${pageContext.request.contextPath}/instructor/Profile.jsp">Profile</a>
     </div>
 
     <div class="logout-container">
@@ -153,7 +153,7 @@
                 <h4>Submissions</h4>
                 <p>Check Students submissions history.</p>
             </a>
-            <a href="./Profile.jsp" class="feature-box text-dark text-decoration-none">
+            <a href="${pageContext.request.contextPath}/instructor/Profile.jsp" class="feature-box text-dark text-decoration-none">
                 <h4>Profile</h4>
                 <p>Update your personal information.</p>
             </a>

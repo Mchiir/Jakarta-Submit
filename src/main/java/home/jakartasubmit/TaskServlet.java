@@ -127,15 +127,12 @@ public class TaskServlet extends HttpServlet {
                 Task task = new Task(instructor, courseName, description, deadline);
 
                 // Register the Task
-                if (taskService.registerTask(task)) {
-                    response.getWriter().write("Task created successfully!, <a href=" + request.getContextPath()+ "/task" +">Return back</a>");
-                }
-            } else {
-                response.getWriter().write("Task creation failed. <a href=" + request.getContextPath()+ "/task" + ">Return back</a>");
+                taskService.registerTask(task, currentUserDTO);
+                response.getWriter().write("Task created successfully!, <a href=" + request.getContextPath() + "/task" + ">Return back</a>");
             }
         } catch (Exception e){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);  // Set status code to 500
-            response.getWriter().write("Error with submission registration: " + e.getMessage());
+            response.getWriter().write("Error with task registration: "+ e.getMessage() +"<br><a href=" + request.getContextPath() + "/task" + ">Return back</a>");
             e.printStackTrace();
         }
     }
@@ -145,15 +142,23 @@ public class TaskServlet extends HttpServlet {
         UUID taskId = UUID.fromString(request.getParameter("id"));
         Task task = taskService.getTaskById(taskId);
 
-        if (task != null) {
-            task.setCourseName(request.getParameter("courseName"));
-            task.setDescription(request.getParameter("description"));
-            task.setDeadline(LocalDateTime.parse(request.getParameter("deadline")));
+        var sessionobj = request.getSession(false);
+        if(sessionobj != null && sessionobj.getAttribute("isLoggedIn") != null) {
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+        var currentUser = (UserDTO) sessionobj.getAttribute("currentUser");
 
-            boolean isUpdated = taskService.updateTask(task);
-                response.getWriter().write(isUpdated ? "Task updated successfully.": "Task update failed.");
-        } else {
-            response.getWriter().write("Task not found.");
+        if (task != null) {
+            try {
+                task.setCourseName(request.getParameter("courseName"));
+                task.setDescription(request.getParameter("description"));
+                task.setDeadline(LocalDateTime.parse(request.getParameter("deadline")));
+
+                taskService.updateTask(task, currentUser);
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                request.getRequestDispatcher("error.jsp").forward(request, response);
+            }
         }
     }
 

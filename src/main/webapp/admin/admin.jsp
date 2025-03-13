@@ -1,8 +1,9 @@
 <%@ page import="home.jakartasubmit.DTOs.UserDTO" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
 <%
     HttpSession sessionobj = request.getSession(false);
     if (sessionobj == null || sessionobj.getAttribute("isLoggedIn") == null || !(boolean) sessionobj.getAttribute("isLoggedIn")) {
-        response.sendRedirect("login.jsp");
+        response.sendRedirect("auth/login.jsp");
         return;
     }
 
@@ -15,16 +16,15 @@
 <head>
     <title>ADMIN Dashboard</title>
     <link
-      href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.css"
+      href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.css"
       rel="stylesheet"
       type="text/css"
     />
     <link
-      href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css"
+      href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.min.css"
       rel="stylesheet"
       type="text/css"
     />
-    <script src="${pageContext.request.contextPath}/bootstrap/js/bootstrap.bundle.min.js"></script>
     <style>
         .sidebar {
             height: 100vh;
@@ -124,7 +124,7 @@
         <a href="#">Dashboard</a>
         <a href="${pageContext.request.contextPath}/task">Tasks</a>
         <a href="${pageContext.request.contextPath}/submission">Submissions</a>
-        <a href="../public/Profile.jsp">Profile</a>
+        <a href="${pageContext.request.contextPath}/admin/Profile.jsp">Profile</a>
     </div>
 
     <div class="logout-container">
@@ -145,15 +145,15 @@
         <div class="dashboard-content">
             <a href="${pageContext.request.contextPath}/task" class="feature-box text-dark text-decoration-none">
                 <h4>Tasks</h4>
-                <p>View and manage posted tasks.</p>
+                <p>View and manage all posted tasks.</p>
             </a>
             <a href="${pageContext.request.contextPath}/submission" class="feature-box text-dark text-decoration-none">
                 <h4>Submissions</h4>
-                <p>View and manage submissions.</p>
+                <p>View and manage all submissions.</p>
             </a>
-            <a href="../public/Profile.jsp" class="feature-box text-dark text-decoration-none">
+            <a href="${pageContext.request.contextPath}/admin/Profile.jsp" class="feature-box text-dark text-decoration-none">
                 <h4>Profile</h4>
-                <p>Your personal profile.</p>
+                <p>Your profile information.</p>
             </a>
         </div>
     </div>

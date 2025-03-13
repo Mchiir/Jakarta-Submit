@@ -75,11 +75,6 @@
         background-color: white;
       }
 
-      .sidebar {
-        display: flex;
-        justify-content: space-between;
-      }
-
       .sidebar .logout-button:hover {
         background-color: #ccc;
         color: #343a40;
@@ -130,7 +125,7 @@
         <a href="#">Dashboard</a>
         <a href="${pageContext.request.contextPath}/task">Tasks</a>
         <a href="${pageContext.request.contextPath}/submission">Submissions</a>
-        <a href="./Profile.jsp">Profile</a>
+        <a href="${pageContext.request.contextPath}/student/Profile.jsp">Profile</a>
       </div>
 
       <div class="logout-container">
@@ -163,7 +158,7 @@
           <p>Check your submission history.</p>
         </a>
         <a
-          href="./Profile.jsp"
+          href="${pageContext.request.contextPath}/student/Profile.jsp"
           class="feature-box text-dark text-decoration-none"
         >
           <h4>Profile</h4>

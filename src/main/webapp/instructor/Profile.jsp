@@ -7,8 +7,6 @@
         return;
     }
 
-    boolean isLoggedIn = sessionObj.getAttribute("isLoggedIn") != null;
-    UserDTO currentUser = (UserDTO) sessionObj.getAttribute("currentUser");
 %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -27,6 +25,7 @@
     <div class="row justify-content-center">
         <div class="mr-3">
             <a href="${pageContext.request.contextPath}/instructor/instructor.jsp" class="btn btn-outline-primary position-absolute start-0">Back</a>
+
         </div>
 
         <div class="col-md-6">
@@ -51,7 +50,7 @@
                             <button type="submit" class="btn btn-primary">Change</button>
                         </form>
                     </c:if>
-
+                    
                 </div>
             </div>
         </div>

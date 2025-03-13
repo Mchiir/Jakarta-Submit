@@ -1,5 +1,6 @@
 package home.jakartasubmit.services;
 
+import home.jakartasubmit.DTOs.UserDTO;
 import home.jakartasubmit.models.Submission;
 import home.jakartasubmit.models.Task;
 import home.jakartasubmit.models.User;
@@ -13,24 +14,29 @@ import java.util.UUID;
 
 public class TaskService {
 
-    public boolean isValid(Task task) {
-        return task != null && task.getInstructor() != null && !task.getCourseName().isEmpty() &&
+    public boolean isValid(Task task, UserDTO currentUser) {
+        if(task == null) {
+            throw new IllegalArgumentException("task is null");
+        }
+
+        if(currentUser.getRole() != User.Role.INSTRUCTOR){
+            throw new SecurityException("Only instructors can perform this operation");
+        }
+
+        return !task.getCourseName().isEmpty() &&
                 task.getCourseName().length() < 100 &&
                 !task.getDescription().isEmpty() && task.getDescription().length() < 255 &&
                 task.getDeadline() != null && !task.getDeadline().isBefore(LocalDateTime.now());
     }
 
     // Register a new task (Save task to the database)
-    public boolean registerTask(Task task) {
-        if (!isValid(task)) {
-            throw new IllegalArgumentException("Task is not valid");
-        }
-
+    public void registerTask(Task task, UserDTO currentUser) throws Exception {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.persist(task);  // Save the task
-            transaction.commit();
-            return true;
+            if(isValid(task, currentUser)){
+                Transaction transaction = session.beginTransaction();
+                session.persist(task);  // Save the task
+                transaction.commit();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -58,20 +64,15 @@ public class TaskService {
     }
 
     // Update an existing task
-    public boolean updateTask(Task task) {
-        if (!isValid(task)) {
-            System.out.println("Task is not valid.");
-            return false;
-        }
-
+    public void updateTask(Task task, UserDTO currentUser) throws Exception {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.merge(task);  // Update the task
-            transaction.commit();
-            return true;
+            if(isValid(task, currentUser)){
+                Transaction transaction = session.beginTransaction();
+                session.merge(task);  // Update the task
+                transaction.commit();
+            }
         } catch (Exception e) {
-            System.out.println("Error updating task: " + e.getMessage());
-            return false;
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -79,13 +80,23 @@ public class TaskService {
     public void deleteTask(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Task task = session.get(Task.class, id);  // Retrieve task by ID
-            if (task != null) {
-                session.remove(task);  // Delete the task if it exists
-                transaction.commit();
+            Task task = session.get(Task.class, id); // Retrieve task by ID
+
+            if (task == null) {
+                throw new IllegalArgumentException("Task not found.");
             }
-        } catch (Exception e){
+
+            try {
+                session.remove(task); // Attempt to delete
+                transaction.commit();
+            } catch (org.hibernate.exception.ConstraintViolationException e) {
+                transaction.rollback(); // Rollback transaction if FK violation occurs
+                throw new RuntimeException("Task is still referenced in submissions.");
+            }
+
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
+
 }
