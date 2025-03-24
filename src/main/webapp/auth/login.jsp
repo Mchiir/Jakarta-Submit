@@ -6,8 +6,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-    <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="${pageContext.request.contextPath}/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body class="d-flex flex-column justify-content-center align-items-center"
@@ -27,7 +27,7 @@
     <p class="text-center mb-4" style="font-size: 2rem; font-weight: bold;">Login to Your Account</p>
 
     <!-- Form -->
-    <form action="/Jakarta-Submit-1.0-SNAPSHOT/user" method="POST">
+    <form action="${pageContext.request.contextPath}/user" method="POST">
         <input type="hidden" name="action" value="login"> <!-- Action is 'register' -->
 
         <!-- Email -->
