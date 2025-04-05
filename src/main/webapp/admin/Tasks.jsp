@@ -1,12 +1,10 @@
-<%@ page import="home.jakartasubmit.DTOs.UserDTO" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="f" uri="http://example.com/functions" %>
 
 <%
     HttpSession sessionobj = request.getSession(false);
     if (sessionobj == null || sessionobj.getAttribute("isLoggedIn") == null || !(boolean) sessionobj.getAttribute("isLoggedIn")) {
-        response.sendRedirect("login.jsp");
-        return;
+        response.sendRedirect("auth/login.jsp");
     }
 %>
 
