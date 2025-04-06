@@ -24,23 +24,11 @@ This project implements **RBAC (Role-Based Access Control)** to manage different
 
 ---
 
-## 📸 Screenshots
-
-> _..._
-
----
-
 ## 👨 Let's connect and follow each other
 
-**Mchiir**  
+**Mchiir**
 📧 [mugishachrispin590@gmail.com](mailto:mugishachrispin590@gmail.com)  
 🔗 [GitHub – @Mchiir](https://github.com/Mchiir)
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
