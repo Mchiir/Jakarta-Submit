@@ -137,6 +137,18 @@ public class TaskServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
+    private void handleTaskDeletion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html; charset=UTF-8");
+
+        UUID taskId = UUID.fromString(request.getParameter("taskId"));
+
+        try{
+            taskService.deleteTask(taskId);
+            response.getWriter().write("Task deleted successfully. <a href=" + request.getContextPath()+ "/task" + ">Return back</a>");
+        } catch(Exception e) {
+            response.getWriter().write("Error deleting task: "+ e.getMessage() +"<br><a href=" + request.getContextPath() + "/task" + ">Return back</a>");
+        }
+    }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -160,19 +172,6 @@ public class TaskServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 request.getRequestDispatcher("error.jsp").forward(request, response);
             }
-        }
-    }
-
-    private void handleTaskDeletion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html; charset=UTF-8");
-
-        UUID taskId = UUID.fromString(request.getParameter("taskId"));
-
-        try{
-            taskService.deleteTask(taskId);
-            response.getWriter().write("Task deleted successfully. <a href=" + request.getContextPath()+ "/task" + ">Return back</a>");
-        } catch(Exception e) {
-            response.getWriter().write("Error deleting task: "+ e.getMessage() +"<br><a href=" + request.getContextPath() + "/task" + ">Return back</a>");
         }
     }
 }

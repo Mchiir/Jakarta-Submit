@@ -130,10 +130,10 @@ public class SubmissionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        if ("add".equalsIgnoreCase(action)) {
+        if(action == null){
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        } else if ("add".equalsIgnoreCase(action)) {
             handleSubmissionRegistration(request, response);
-        } else if ("edit".equalsIgnoreCase(action)) {
-            handleSubmissionEdit(request, response);
         } else if ("delete".equalsIgnoreCase(action)) {
             handleSubmissionDeletion(request, response);
         }
@@ -190,58 +190,6 @@ public class SubmissionServlet extends HttpServlet {
                     "<br> <a href=\"" + request.getContextPath() + "/submission\">Return back</a>");
             e.printStackTrace();
         }
-    }
-
-    private void handleSubmissionEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html; charset=UTF-8");
-
-        HttpSession sessionobj = request.getSession(false);
-        UserDTO currentUserDTO = null;
-
-        if (sessionobj != null && sessionobj.getAttribute("isLoggedIn") != null) {
-            currentUserDTO = (UserDTO) sessionobj.getAttribute("currentUser");
-        }
-
-        if (currentUserDTO == null) {
-            response.getWriter().write("Unauthorized access. <a href=\"login.jsp\">Return to Login</a>");
-            return;
-        }
-
-        String page = "";
-        page = switch (currentUserDTO.getRole()) {
-            case ADMIN -> "/admin/Submissions.jsp";
-            case INSTRUCTOR -> "/instructor/Submissions.jsp";
-            case STUDENT -> "/student/Submissions.jsp";
-            default -> page = "/error.jsp";
-        };
-
-        try {
-            UUID submissionId = UUID.fromString(request.getParameter("submissionId"));
-            Submission submission = submissionService.getSubmissionById(submissionId);
-
-            if (submission != null) {
-                String newFilePath = request.getParameter("filePath");
-
-                // Update only if the value is provided
-                if (newFilePath != null && !newFilePath.isEmpty()) {
-                    submission.setFilePath(newFilePath);
-                }
-
-                // Attempt to update in DB
-                if (submissionService.updateSubmission(submission)) {
-                    response.getWriter().write("<p style='color: green;'>Submission updated successfully.</p>");
-                } else {
-                    response.getWriter().write("<p style='color: red;'>Error updating submission.</p>");
-                }
-            } else {
-                response.getWriter().write("<p style='color: red;'>Submission not found.</p>");
-            }
-        } catch (Exception e) {
-            response.getWriter().write("<p style='color: red;'>Invalid request: " + e.getMessage() + "</p>");
-        }
-
-        // Return link
-        response.getWriter().write("<br/><a href="+ request.getContextPath()+page +">Return back</a>");
     }
 
     private void handleSubmissionDeletion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
