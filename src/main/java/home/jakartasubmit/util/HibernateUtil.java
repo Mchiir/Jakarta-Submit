@@ -13,6 +13,7 @@ import java.util.Properties;
 
 public class HibernateUtil {
     private static SessionFactory sessionFactory;
+    private static Properties props = ConfigLoader.loadProperties();
 
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
@@ -24,9 +25,9 @@ public class HibernateUtil {
             settings.put(Environment.DRIVER, "org.postgresql.Driver");
             //Postgresql
 //            settings.put(Environment.URL, "jdbc:mysql://localhost:3306/mymis_db");
-            settings.put(Environment.URL, "jdbc:postgresql://localhost:5432/jakarta_submission_db");
-            settings.put(Environment.USER, "guest");
-            settings.put(Environment.PASS, "guest");
+            settings.put(Environment.URL, props.getProperty("db.url"));
+            settings.put(Environment.USER, props.getProperty("db.user"));
+            settings.put(Environment.PASS, props.getProperty("db.password"));
 
             //PostgreSQL
             settings.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
