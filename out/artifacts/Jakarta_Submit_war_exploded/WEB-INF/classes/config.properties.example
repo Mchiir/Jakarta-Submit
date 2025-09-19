@@ -1,3 +1,0 @@
-db.url=jdbc:postgresql://host:5432/jakarta_submission_db
-db.user=guest
-db.password=guest
