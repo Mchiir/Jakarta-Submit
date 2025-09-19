@@ -24,6 +24,16 @@ This project implements **RBAC (Role-Based Access Control)** to manage different
 
 ---
 
+## Configure bootstrap
+
+- download (click first button) bootstrap css/js bundles from [bootstrap css/js](https://getbootstrap.com/docs/5.3/getting-started/download)
+- extract the .zip
+- create "resources/bootstrap" folders into src/main/webapp/
+- move the css/js folders to the created bootstrap directory
+- You're done.
+
+---
+
 ## Run the Web App
 
 ### General Running Maven Commands and Tomcat Configuration Panel
