@@ -42,7 +42,7 @@ This project implements **RBAC (Role-Based Access Control)** to manage different
 
 ![Refreshing Project](./static/refreshing-project.png)
 
-![Tomcat running pannel](./static/tomcat%20conf%20pannel.png)
+![Tomcat running panel](./static/tomcat%20conf%20pannel.png)
 
 ```sh
 mvn clean
@@ -52,7 +52,7 @@ mvn package
 py deploy_script.py
 ```
 
-Then access **localhost:5005/Jakarta-Submit-1.0-SNAPSHOT** and make sure Tomcat has been run from the Tomcat configuration panel.  
+Then access **localhost:5005/Jakarta-Submit-1.0-SNAPSHOT** and make sure Tomcat is running from the Tomcat configuration panel.  
 Consider changing the Tomcat port number; currently, **5005** is being used.
 
 ---
@@ -93,12 +93,27 @@ You’ll be redirected to the web browser app at: `http://localhost:5005/Jakarta
 
 ---
 
-
 ### In production (docker)
----bash
+
+```bash
 docker-compose up -d --build
+```
+
+- then access "localhost:8080" (further docker deployment tricks are in [Dockerfile](./Dockerfile) and [docker-compose.yml](./docker-compose.yml))
+
 ---
-   - then access "localhost:8080"
+
+## Resources used
+
+- [Docker deployment](https://medium.com/@poojithairosha/how-to-containerize-a-java-ee-web-application-with-mysql-database-using-docker-c09388ffdba6)
+- [Follow tags of official tomcat's image](https://hub.docker.com/_/tomcat)
+- [mvn central repository](https://mvnrepository.com)
+- [mvn repository](https://mvnrepository.com/)
+- [Bootstrap](https://getbootstrap.com/)
+- [ChatGPT](https://chatgpt.com/)
+- [Github copilot](https://github.com/copilot)
+
+---
 
 ## Let's Connect and Follow Each Other
 
