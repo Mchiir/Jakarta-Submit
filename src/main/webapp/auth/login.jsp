@@ -47,7 +47,7 @@
         </div>
 
         <div class="d-flex justify-content-center">
-            <a href="./register.jsp">Register</a>
+            <a href="${pageContext.request.contextPath}/auth/register.jsp">Register</a>
         </div>
     </form>
 </div>

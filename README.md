@@ -36,7 +36,9 @@ This project implements **RBAC (Role-Based Access Control)** to manage different
 
 ## Run the Web App
 
-### General Running Maven Commands and Tomcat Configuration Panel
+### In development
+
+#### General Running Maven Commands and Tomcat Configuration Panel
 
 ![Refreshing Project](./static/refreshing-project.png)
 
@@ -55,7 +57,7 @@ Consider changing the Tomcat port number; currently, **5005** is being used.
 
 ---
 
-### Running the Web App from Tomcat Server IntelliJ Plugin
+#### Running the Web App from Tomcat Server IntelliJ Plugin
 
 ![Artifact Configuration](./static/artifact%20conf.png)  
 ![Tomcat Deployment Configuration](./static/tomcat%20depl%20conf.png)  
@@ -90,6 +92,13 @@ Consider changing the Tomcat port number; currently, **5005** is being used.
 You’ll be redirected to the web browser app at: `http://localhost:5005/Jakarta_Submit_war_exploded`
 
 ---
+
+
+### In production (docker)
+---bash
+docker-compose up -d --build
+---
+   - then access "localhost:8080"
 
 ## Let's Connect and Follow Each Other
 

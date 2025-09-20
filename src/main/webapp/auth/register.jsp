@@ -62,7 +62,7 @@
         </div>
 
         <div class="d-flex justify-content-center">
-            <a href="./login.jsp">Login</a>
+            <a href="${pageContext.request.contextPath}/auth/login.jsp">Login</a>
         </div>
     </form>
 </div>

@@ -19,7 +19,7 @@
     </c:if>
 
     <div class="text-center mt-3">
-        <a href="login.html" class="btn btn-secondary">Login again</a>
+        <a href="${pageContext.request.contextPath}/auth/login.jsp" class="btn btn-secondary">Login again</a>
     </div>
 </div>
 

@@ -1,0 +1,5 @@
+Commands used in docker:
+
+docker-compose up -d --build
+docker-compose down
+docker ps -a
