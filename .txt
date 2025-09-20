@@ -5,7 +5,7 @@ docker-compose up -d --build
 docker-compose down
 docker ps -a
 
-// for manual build and run
+// for manual build and run (this proves that the Dockerfile works, ready for dockerhub deployment)
 docker build -t jakarta-submit .
 docker run -p 8080:8080 jakarta-submit
 
