@@ -103,9 +103,9 @@ docker-compose up -d --build
 
 ---
 
-## Render.com Deployment (Production)
+## Render.com Deployment (Production, for me I used free tier)
 
-### Step 1: Provision PostgreSQL
+### Step 1: Provision PostgreSQL (mine will expire October 21, 2025)
 
 - Go to Render Dashboard → New → PostgreSQL Database.
 - Create a database, note the connection URL and credentials.
