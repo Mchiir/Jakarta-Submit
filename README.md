@@ -93,13 +93,66 @@ You’ll be redirected to the web browser app at: `http://localhost:5005/Jakarta
 
 ---
 
-### In production (docker)
+### In production local testing (docker)
 
 ```bash
 docker-compose up -d --build
 ```
 
 - then access "localhost:8080" (further docker deployment tricks are in [Dockerfile](./Dockerfile) and [docker-compose.yml](./docker-compose.yml))
+
+---
+
+## Render.com Deployment (Production)
+
+### Step 1: Provision PostgreSQL
+
+- Go to Render Dashboard → New → PostgreSQL Database.
+- Create a database, note the connection URL and credentials.
+
+### Step 2: Set Environment Variables on Render
+
+- Go to Web Service → Environment → Environment Variables.
+- Add the following (replace with your DB credentials):
+
+```env
+DB_HOST=<render-db-host>
+DB_PORT=5432
+DB_NAME=<database-name>
+DB_USER=<username>
+DB_PASSWORD=<password>
+```
+
+- Optional: use a single `DB_URL` instead:
+
+```
+DB_URL=jdbc:postgresql://<render-db-host>:5432/<database-name>?sslmode=require
+DB_USER=<username>
+DB_PASSWORD=<password>
+```
+
+### Step 3: Configure Application to Read Env Vars
+
+- Ensure `config.properties` uses placeholders:
+
+```properties
+db.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=require
+db.user=${DB_USER}
+db.password=${DB_PASSWORD}
+```
+
+- Add `ConfigLoader` or similar logic to expand `${VAR}` to environment variables.
+
+### Step 4: Deploy Web Service
+
+- Option A (GitHub-based build): push code → Render auto-builds Docker image.
+- Option B (Docker Hub image): push new image → manually deploy via Render dashboard.
+- Render will start Tomcat and connect to the Render PostgreSQL instance.
+
+### Step 5: Access Your App
+
+- URL will be provided by Render after deployment.
+- Ensure all environment variables are correct and DB is reachable.
 
 ---
 

@@ -1,15 +1,18 @@
-Commands used in docker:
+Commands used in docker deployment:
 
 // for quick preview
 docker-compose up -d --build
 docker-compose down
 docker ps -a
 
-// for manual build and run (this proves that the Dockerfile works, ready for dockerhub deployment)
+
+
+// for manual build and run and push (this proves that the Dockerfile works, ready for dockerhub deployment)
+// these commands are user also to update docker pushed image.
 docker build -t jakarta-submit .
 docker run -p 8080:8080 jakarta-submit
 
-// pushing
+// pushing (latest)
 docker tag jakarta-submit <your-dockerhub-username>/jakarta-submit:latest
 docker push <your-dockerhub-username>/jakarta-submit:latest
 
