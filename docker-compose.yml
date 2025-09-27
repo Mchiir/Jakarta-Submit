@@ -17,6 +17,7 @@ services:
   # Tomcat web server service
   tomcat:
     build: .                            # Build from current directory
+    image: jakarta-submit
     container_name: tomcat
     restart: always
     ports:
