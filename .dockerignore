@@ -1,0 +1,5 @@
+# I'll ignore all, accept required data only
+/*
+
+# Ignore web archive
+!/target/Jakarta-Submit-1.0-SNAPSHOT.war

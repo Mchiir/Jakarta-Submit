@@ -40,9 +40,9 @@ This project implements **RBAC (Role-Based Access Control)** to manage different
 
 #### General Running Maven Commands and Tomcat Configuration Panel
 
-![Refreshing Project](./static/refreshing-project.png)
+![Refreshing Project](fixtures/refreshing-project.png)
 
-![Tomcat running panel](./static/tomcat%20conf%20pannel.png)
+![Tomcat running panel](fixtures/tomcat%20conf%20pannel.png)
 
 ```sh
 mvn clean
@@ -52,16 +52,17 @@ mvn package
 py deploy_script.py
 ```
 
-Then access **localhost:5005/Jakarta-Submit-1.0-SNAPSHOT** and make sure Tomcat is running from the Tomcat configuration panel.  
-Consider changing the Tomcat port number; currently, **5005** is being used.
+> Consider setting tomcat environment variables, follow [this guide](./tomcat_variables.md)
+> Then access **localhost:5005/Jakarta-Submit-1.0-SNAPSHOT** and make sure Tomcat is running from the Tomcat configuration panel.
+> Consider changing the Tomcat port number; currently, **5005** is being used.
 
 ---
 
 #### Running the Web App from Tomcat Server IntelliJ Plugin
 
-![Artifact Configuration](./static/artifact%20conf.png)  
-![Tomcat Deployment Configuration](./static/tomcat%20depl%20conf.png)  
-![Tomcat Server Configuration](./static/tomcat%20server%20conf.png)
+![Artifact Configuration](fixtures/artifact%20conf.png)  
+![Tomcat Deployment Configuration](fixtures/tomcat%20depl%20conf.png)  
+![Tomcat Server Configuration](fixtures/tomcat%20server%20conf.png)
 
 1. **Configure Artifacts:**
 
@@ -93,7 +94,7 @@ You’ll be redirected to the web browser app at: `http://localhost:5005/Jakarta
 
 ---
 
-### In production local testing (docker)
+### In production (Docker)
 
 ```bash
 docker-compose up -d --build
@@ -103,14 +104,14 @@ docker-compose up -d --build
 
 ---
 
-## Render.com Deployment (Production, for me I used free tier)
+### In production (Render.com Deployment, for me I used free tier)
 
-### Step 1: Provision PostgreSQL (mine will expire October 21, 2025)
+#### Step 1: Provision PostgreSQL (mine will expire October 21, 2025)
 
 - Go to Render Dashboard → New → PostgreSQL Database.
 - Create a database, note the connection URL and credentials.
 
-### Step 2: Set Environment Variables on Render
+#### Step 2: Set Environment Variables on Render
 
 - Go to Web Service → Environment → Environment Variables.
 - Add the following (replace with your DB credentials):
@@ -131,7 +132,7 @@ DB_USER=<username>
 DB_PASSWORD=<password>
 ```
 
-### Step 3: Configure Application to Read Env Vars
+#### Step 3: Configure Application to Read Env Vars
 
 - Ensure `config.properties` uses placeholders:
 
@@ -143,13 +144,13 @@ db.password=${DB_PASSWORD}
 
 - Add `ConfigLoader` or similar logic to expand `${VAR}` to environment variables.
 
-### Step 4: Deploy Web Service
+#### Step 4: Deploy Web Service
 
 - Option A (GitHub-based build): push code → Render auto-builds Docker image.
 - Option B (Docker Hub image): push new image → manually deploy via Render dashboard.
 - Render will start Tomcat and connect to the Render PostgreSQL instance.
 
-### Step 5: Access Your App
+#### Step 5: Access Your App
 
 - URL will be provided by Render after deployment.
 - Ensure all environment variables are correct and DB is reachable.

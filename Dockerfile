@@ -1,4 +1,3 @@
-# Use official Tomcat 10.1 with JDK 21 (Temurin, Noble OS)
 FROM tomcat:10.1-jdk21-temurin-noble
 
 # Path to your WAR file built by Maven
