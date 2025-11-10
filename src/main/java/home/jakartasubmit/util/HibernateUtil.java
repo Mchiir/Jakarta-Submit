@@ -35,10 +35,10 @@ public class HibernateUtil {
                     System.out.println("JNDI lookup failed or not configured — falling back to System environment variables.");
                 }
 
-                // Fallback to System environment if any are null
-                if (dbuser == null) dbuser = System.getenv("DOCKER_PSQL_USER");
-                if (dbpassword == null) dbpassword = System.getenv("DOCKER_PSQL_PASSWORD");
-                if (dburl == null) dburl = System.getenv("DOCKER_PSQL_URL");
+                // Fallback to System environment if any are null (you can define them in docker-compose.yml)
+                if (dbuser == null) dbuser = System.getenv("DB_USER");
+                if (dbpassword == null) dbpassword = System.getenv("DB_PASSWORD");
+                if (dburl == null) dburl = System.getenv("DB_URL");
 
                 // Safety check
                 if (dburl == null || dbuser == null || dbpassword == null) {

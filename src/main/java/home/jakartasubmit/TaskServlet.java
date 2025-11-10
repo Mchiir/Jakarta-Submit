@@ -22,59 +22,69 @@ import java.util.*;
 public class TaskServlet extends HttpServlet {
     private final TaskService taskService = new TaskService();
     private final UserService userService = new UserService();
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        Map<String, Object> responseJson = new HashMap<>();
 
         HttpSession session = request.getSession(false);
-        Boolean isLoggedIn = false;
-        UserDTO currentUser = null;
-        if (session != null) {
-            isLoggedIn = (Boolean) session.getAttribute("isLoggedIn");
-            currentUser = (UserDTO) session.getAttribute("currentUser");
-        }
-        User.Role role = currentUser.getRole();
-        String page = "";
-        page = switch (currentUser.getRole()) {
-            case ADMIN -> "/admin/Tasks.jsp";
-            case INSTRUCTOR -> "/instructor/Tasks.jsp";
-            case STUDENT -> "/student/Tasks.jsp";
-            default -> page = "/error.jsp";
-        };
 
-        List<Task> tasks = taskService.getAllTasks();
+        if (session == null || session.getAttribute("isLoggedIn") == null || !(Boolean) session.getAttribute("isLoggedIn")) {
+            request.setAttribute("message", "Please log in to continue.");
+            request.setAttribute("messageType", "danger");
+            request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
+            return;
+
+        }
+
+        UserDTO currentUser = (UserDTO) session.getAttribute("currentUser");
+        if (currentUser == null) {
+            request.setAttribute("message", "Please log in to continue.");
+            request.setAttribute("messageType", "danger");
+            request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
+        }
+
+        User.Role role = currentUser.getRole();
+        String page;
+        List<Task> tasks;
+        String message;
+        String messageType;
+
         switch (role) {
-            case ADMIN:
+            case ADMIN -> {
+                page = "/admin/Tasks.jsp";
                 tasks = taskService.getAllTasks();
-                break;
-            case INSTRUCTOR:
+                message = tasks.isEmpty() ? "No tasks so far.": "All tasks loaded successfully.";
+                messageType = "success";
+            }
+            case INSTRUCTOR -> {
+                page = "/instructor/Tasks.jsp";
                 User instructor = userService.getUserByEmail(currentUser.getEmail());
                 tasks = taskService.getTasksByInstructor(instructor);
-                break;
-            case STUDENT:
-                User student = userService.getUserByEmail(currentUser.getEmail());
+                message = tasks.isEmpty() ? "No tasks created so far for your courses." : "Created tasks loaded successfully.";
+                messageType = "success";
+            }
+            case STUDENT -> {
+                page = "/student/Tasks.jsp";
+//                User student = userService.getUserByEmail(currentUser.getEmail());
                 tasks = taskService.getAllTasks();
-                break;
-            default:
-                response.sendRedirect("error.jsp"); // Handle unexpected role case
+                message = tasks.isEmpty() ? "No tasks so far." : "Tasks loaded successfully.";
+                messageType = "success";
+            }
+            default -> {
+                request.setAttribute("message", "Unexpected user role: " + role);
+                request.setAttribute("messageType", "danger");
+                request.getRequestDispatcher("/error.jsp").forward(request, response);
                 return;
+            }
         }
 
-        if (tasks != null) {
-            request.setAttribute("tasks", tasks);
-
-            request.setAttribute("message", "Submissions got successfully");
-            request.setAttribute("messageType", "success");
-            request.getRequestDispatcher(page).forward(request, response);
-        } else {
-            request.setAttribute("message", "Error getting submissions");
-            request.setAttribute("messageType", "danger");
-            request.getRequestDispatcher("error.jsp").forward(request, response);
-        }
+        // Forward response
+        request.setAttribute("tasks", tasks);
+        request.setAttribute("message", message);
+        request.setAttribute("messageType", messageType);
+        request.getRequestDispatcher(page).forward(request, response);
     }
 
     @Override

@@ -11,7 +11,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,61 +68,81 @@ public class SubmissionServlet extends HttpServlet {
     }
 
     private void handleGetSubmissions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Retreiving formData
+        // login check
         HttpSession sessionobj = request.getSession(false);
-        UserDTO currentUserDTO = null;
-        if (sessionobj != null && sessionobj.getAttribute("isLoggedIn") != null) {
-            currentUserDTO = (UserDTO) sessionobj.getAttribute("currentUser");
-        }else{
-            request.getRequestDispatcher("error.jsp").forward(request, response);
-        }
-        User.Role role = currentUserDTO.getRole();
-        String email = currentUserDTO.getEmail();
 
-        List<Submission> submissions = new ArrayList<>();
-        List<Task> tasks = new ArrayList<>();
-        List<User> students = new ArrayList<>();
-        String page = "error.jsp";
+        if (sessionobj == null || sessionobj.getAttribute("isLoggedIn") == null || !(Boolean) sessionobj.getAttribute("isLoggedIn")) {
+            request.setAttribute("message", "Please log in to view submissions.");
+            request.setAttribute("messageType", "danger");
+            request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
+            return;
+        }
+
+        UserDTO currentUserDTO = (UserDTO) sessionobj.getAttribute("currentUser");
+        if (currentUserDTO == null) {
+            request.setAttribute("message", "Please log in to view submissions.");
+            request.setAttribute("messageType", "danger");
+            request.getRequestDispatcher("/auth/login.jsp").forward(request, response);
+            return;
+        }
+
+        User.Role role = currentUserDTO.getRole();
+        List<Submission> submissions;
+        List<Task> tasks;
+        String page;
 
         switch (role) {
-            case ADMIN:
+            case ADMIN -> {
                 submissions = submissionService.getAllSubmissions();
                 tasks = taskService.getAllTasks();
                 page = "/admin/Submissions.jsp";
-                break;
-            case INSTRUCTOR:
+            }
+            case INSTRUCTOR -> {
                 User instructor = userService.getUserByEmail(currentUserDTO.getEmail());
                 submissions = submissionService.getSubmissionsByInstructor(instructor);
                 tasks = taskService.getTasksByInstructor(instructor);
                 page = "/instructor/Submissions.jsp";
-                break;
-            case STUDENT:
+            }
+            case STUDENT -> {
                 User student = userService.getUserByEmail(currentUserDTO.getEmail());
                 submissions = submissionService.getSubmissionsByStudent(student);
-                students = userService.getUsersByRole(role);
                 tasks = taskService.getAllTasks();
                 page = "/student/Submissions.jsp";
-                break;
-            default:
-                response.sendRedirect("error.jsp"); // Handle unexpected role case
+            }
+            default -> {
+                request.setAttribute("message", "Unexpected user role: " + role);
+                request.setAttribute("messageType", "danger");
+                request.getRequestDispatcher("/error.jsp").forward(request, response);
                 return;
+            }
         }
 
         submissions
                 .forEach(submission -> submission.setFilePath(submissionService.getFileName(submission.getFilePath())));
 
-        if (submissions != null || tasks != null) {
-            request.setAttribute("submissions", submissions);
-            request.setAttribute("tasks", tasks);
-
-            request.setAttribute("message", "Submissions got successfully");
-            request.setAttribute("messageType", "success");
-            request.getRequestDispatcher(page).forward(request, response);
+        String message;
+        if (submissions.isEmpty()) {
+            message = switch (role) {
+                case ADMIN -> "No submissions and tasks found.";
+                case INSTRUCTOR -> "No submissions found for your courses.";
+                case STUDENT -> "You have not submitted any tasks yet.";
+                default -> "No submissions available.";
+            };
         } else {
-            request.setAttribute("message", "Error getting submissions");
-            request.setAttribute("messageType", "danger");
-            request.getRequestDispatcher(page).forward(request, response);
+            message = switch (role) {
+                case ADMIN -> "All submissions and tasks loaded successfully.";
+                case INSTRUCTOR -> "Submissions for your courses loaded successfully.";
+                case STUDENT -> "Your submissions loaded successfully.";
+                default -> "Submissions loaded.";
+            };
         }
+
+        request.setAttribute("submissions", submissions);
+        request.setAttribute("tasks", tasks);
+        request.setAttribute("message", message);
+        request.setAttribute("messageType", "success");
+
+        request.getRequestDispatcher(page).forward(request, response);
     }
 
     @Override

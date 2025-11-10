@@ -39,41 +39,38 @@ public class UserServlet extends HttpServlet {
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String confirmPassword = request.getParameter("confirmPassword");
         User.Role role = User.Role.valueOf(request.getParameter("role").toUpperCase());
 
-        User user = new User(fullName, email, password, role);
         String message = null;
         String messageType = null;
-        String page = null;
+        String page = "/auth/register.jsp"; // Default page
 
-        try{
-            if (userService.registerUser(user)) {
-                message = "User registered successfully!";
-                messageType = "success";
-                page = "/auth/login.jsp"; // Redirecting to login page after registration
-            } else {
-                message = "Registration failed. Please try again.";
+        if (!password.equals(confirmPassword)) {
+            message = "Passwords do not match!";
+            messageType = "danger";
+        } else {
+            // proceeding with user registration
+
+            User user = new User(fullName, email, password, role);
+            try {
+                if (userService.registerUser(user)) {
+                    message = "User registered successfully!";
+                    messageType = "success";
+                    page = "/auth/login.jsp"; // redirect to login page
+                } else {
+                    message = "Registration failed. Please try again.";
+                    messageType = "danger";
+                }
+            } catch (Exception e) {
+                message = "An error occurred during registration: " + e.getMessage();
                 messageType = "danger";
-                page = "/auth/register.jsp"; // Stay on registration page in case of failure
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            message = "An error occurred during registration: " + e.getMessage();
-            messageType = "danger"; // Use danger type for errors
-            page = "/auth/register.jsp"; // Go back to the registration page
-
-            // Log the exception for better debugging
-            e.printStackTrace();
         }
 
         request.setAttribute("message", message);
         request.setAttribute("messageType", messageType);
-
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         // Forward the request to the appropriate page
         RequestDispatcher dispatcher = request.getRequestDispatcher(page);

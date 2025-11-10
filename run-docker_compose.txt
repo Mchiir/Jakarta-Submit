@@ -1,0 +1,12 @@
+Before running below commands,
+make sure you clean, and rebuild another war file with "mvn clean package"
+.env configurations needed in docker-compose.yml are ready.
+
+docker rmi jakarta-submit:latest
+docker rmi mchiir/jakarta-submit:latest
+docker rmi postgres:18
+
+docker-compose --env-file .env up -d --build
+
+docker-compose down
+docker-compose down -v

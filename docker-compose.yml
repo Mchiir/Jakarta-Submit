@@ -1,8 +1,9 @@
-version: "3.8"
+#version: "3.8"
 
 services:
   db:
     image: postgres:18
+    container_name: jakarta_submit_db_snapshot
     restart: always
     environment:
       POSTGRES_USER: ${DOCKER_PSQL_USER}   # DB username from .env
@@ -20,6 +21,7 @@ services:
   app:
     build: .                          # Build from current directory
     container_name: jakarta_submit_snapshot
+    image: jakarta-submit
     restart: always
     depends_on:
       db:
