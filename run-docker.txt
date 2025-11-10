@@ -37,6 +37,8 @@ docker push mchiir/jakarta-submit:latest
 
 
 ############ remote db (Neon) ############
+Make sure app db is created on Neon
+
 docker rmi jakarta-submit:latest
 
 docker build -t jakarta-submit:latest .
