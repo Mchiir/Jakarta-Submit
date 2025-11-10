@@ -1,0 +1,53 @@
+Before running below commands,
+make sure you clean, and rebuild another war file with "mvn clean package"
+.env configurations needed are ready.
+
+############ local docker db ############
+docker rmi jakarta-submit:latest
+
+docker build -t jakarta-submit:latest .
+docker network create jakarta_net
+
+windows powershell (look for credentials in .env file):
+docker run -d `
+  --name jakarta_submit_db_snapshot `
+  --network jakarta_net `
+  -e POSTGRES_USER="" `
+  -e POSTGRES_PASSWORD="" `
+  -e POSTGRES_DB="jakarta_submission_db" `
+  -p 5433:5432 `
+  postgres:18
+
+docker run -d `
+    --name jakarta_submit_snapshot `
+    --network jakarta_net `
+    -e DB_URL="jdbc:postgresql://jakarta_submit_db_snapshot:5432/jakarta_submission_db?sslmode=disable" `
+    -e DB_USER="" `
+    -e DB_PASSWORD="" `
+    -p 8001:8080 `
+    jakarta-submit:latest
+
+docker stop jakarta_submit_snapshot
+docker rm jakarta_submit_snapshot
+docker stop jakarta_submit_db_snapshot
+docker rm jakarta_submit_db_snapshot
+
+docker tag jakarta-submit:latest mchiir/jakarta-submit:latest
+docker push mchiir/jakarta-submit:latest
+
+
+############ remote db (Neon) ############
+docker rmi jakarta-submit:latest
+
+docker build -t jakarta-submit:latest .
+
+docker run -d `
+    --name jakarta_submit_snapshot `
+    -e DB_URL="jdbc:postgresql://ep-twilight-snow-a4sk00t0-pooler.us-east-1.aws.neon.tech/<db_name>?sslmode=require" `
+    -e DB_USER="" `
+    -e DB_PASSWORD="" `
+    -p 8001:8080 `
+    jakarta-submit:latest
+
+docker tag jakarta-submit:latest mchiir/jakarta-submit:latest
+docker push mchiir/jakarta-submit:latest
